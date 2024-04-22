@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import {
@@ -9,10 +10,14 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
 import { createEvent } from "~/server/queries";
 
 export default function page() {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/");
+  }
+
   async function handleEventCreation(formData: FormData) {
     "use server";
     const name = formData.get("name") as string;
