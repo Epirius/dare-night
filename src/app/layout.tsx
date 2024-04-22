@@ -2,6 +2,8 @@ import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import Link from "next/link";
+import { ThemeProvider } from "~/components/theme-provider";
+import { ThemeToggle } from "./ThemeToggle";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,6 +22,7 @@ function TopNav() {
       <Link href="/">
         <h1>{metadata.title}</h1>
       </Link>
+      <ThemeToggle />
     </nav>
   );
 }
@@ -32,8 +35,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable} bg-background`}>
-        <TopNav />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TopNav />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
