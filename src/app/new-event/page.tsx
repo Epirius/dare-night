@@ -1,4 +1,15 @@
 import { redirect } from "next/navigation";
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import { createEvent } from "~/server/queries";
 
 export default function page() {
@@ -11,12 +22,28 @@ export default function page() {
 
   return (
     <main>
-      <h1>Create new event</h1>
-      <form action={handleEventCreation}>
-        <label htmlFor="name">Name</label>
-        <input type="text" id="name" name="name" />
-        <button type="submit">Create</button>
-      </form>
+      <Card>
+        <CardHeader>
+          <CardTitle>Create event</CardTitle>
+          <CardDescription>
+            Events allow you to organize your friends into teams, and compete to
+            finish dare challenges.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form action={handleEventCreation}>
+            <div className="flex flex-col gap-2 pb-6">
+              <Label className="text-lg" htmlFor="name">
+                Name *
+              </Label>
+              <Input type="text" id="name" name="name" />
+            </div>
+            <Button variant="default" type="submit">
+              Create
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </main>
   );
 }

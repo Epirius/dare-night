@@ -10,7 +10,6 @@ import {
   timestamp,
   varchar,
   boolean,
-  uuid,
   unique,
   integer,
 } from "drizzle-orm/pg-core";
