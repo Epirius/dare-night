@@ -18,8 +18,8 @@ export const metadata = {
 
 function TopNav() {
   return (
-    <nav className="bg-blue-500 p-4 text-white">
-      <Link href="/">
+    <nav className="flex w-full items-center justify-between border-b p-4 text-lg font-semibold">
+      <Link href="/" className="text-2xl">
         <h1>{metadata.title}</h1>
       </Link>
       <ThemeToggle />
@@ -42,7 +42,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TopNav />
-          {children}
+          <div className="container mx-auto py-4">{children}</div>
         </ThemeProvider>
       </body>
     </html>
