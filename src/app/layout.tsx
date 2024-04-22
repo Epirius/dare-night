@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import Link from "next/link";
 import { ThemeProvider } from "~/components/theme-provider";
 import { ThemeToggle } from "./ThemeToggle";
+import { ClerkProvider } from "@clerk/nextjs";
+import { TopNav } from "./_components/topnav";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,35 +18,26 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-function TopNav() {
-  return (
-    <nav className="flex w-full items-center justify-between border-b p-4 text-lg font-semibold">
-      <Link href="/" className="text-2xl">
-        <h1>{metadata.title}</h1>
-      </Link>
-      <ThemeToggle />
-    </nav>
-  );
-}
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${inter.variable} bg-background`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TopNav />
-          <div className="container mx-auto py-4">{children}</div>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`font-sans ${inter.variable} bg-background`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TopNav />
+            <div className="container mx-auto py-4">{children}</div>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
