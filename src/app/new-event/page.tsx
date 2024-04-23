@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -10,7 +11,7 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createEvent } from "~/server/queries";
+import { createEvent, eventCreationSchema } from "~/server/queries";
 
 export default function page() {
   const user = auth();
@@ -20,8 +21,21 @@ export default function page() {
 
   async function handleEventCreation(formData: FormData) {
     "use server";
-    const name = formData.get("name") as string;
-    await createEvent(name);
+    const data = eventCreationSchema.safeParse({
+      name: formData.get("name"),
+    });
+
+    if (!data.success) {
+      return Promise.reject({
+        status: 400,
+        body: {
+          error: "Invalid data",
+          details: data.error.errors,
+        },
+      });
+    }
+
+    await createEvent(data.data.name);
     redirect("/");
   }
 
