@@ -1,6 +1,7 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { z } from "zod";
+"use client";
+
+import { RedirectToSignIn, SignedOut } from "@clerk/nextjs";
+import { useFormState } from "react-dom";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -11,36 +12,16 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { createEvent, eventCreationSchema } from "~/server/queries";
+import { createEvent } from "~/server/queries";
 
-export default function page() {
-  const user = auth();
-  if (!user.userId) {
-    redirect("/");
-  }
-
-  async function handleEventCreation(formData: FormData) {
-    "use server";
-    const data = eventCreationSchema.safeParse({
-      name: formData.get("name"),
-    });
-
-    if (!data.success) {
-      return Promise.reject({
-        status: 400,
-        body: {
-          error: "Invalid data",
-          details: data.error.errors,
-        },
-      });
-    }
-
-    await createEvent(data.data.name);
-    redirect("/");
-  }
-
+export default function Page() {
+  const [formState, formAction] = useFormState(createEvent, { error: "" });
+  console.log(formState);
   return (
     <main>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
       <Card>
         <CardHeader>
           <CardTitle>Create event</CardTitle>
@@ -50,7 +31,7 @@ export default function page() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={handleEventCreation}>
+          <form action={formAction}>
             <div className="flex flex-col gap-2 pb-6">
               <Label className="text-lg" htmlFor="name">
                 Name *
@@ -60,6 +41,9 @@ export default function page() {
             <Button variant="default" type="submit">
               Create
             </Button>
+            {formState?.error && (
+              <p className="pt-4 text-sm text-red-500">{formState.error}</p>
+            )}
           </form>
         </CardContent>
       </Card>
