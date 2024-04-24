@@ -37,6 +37,28 @@ export const events = createTable(
   }),
 );
 
+export const eventOtp = createTable(
+  "event_otp",
+  {
+    id: serial("id").primaryKey(),
+    eventId: integer("event_id")
+      .references(() => events.id)
+      .notNull(),
+    otp: varchar("otp", { length: 6 }).notNull().unique(),
+    oneTimeUse: boolean("one_time_use").notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt"),
+    invalidAfter: timestamp("invalid_after")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP + interval '1 month'`),
+  },
+  (example) => ({
+    otpIndex: index("event_otp_idx").on(example.otp),
+  }),
+);
+
 export const member_type_enum = pgEnum("member_type", ["admin", "member"]);
 
 export const event_members = createTable(
@@ -133,6 +155,14 @@ export const task_completion_status = createTable(
 export const eventsRelations = relations(events, ({ many }) => ({
   event_members: many(event_members),
   teams: many(teams),
+  eventOtp: many(eventOtp),
+}));
+
+export const eventOtpRelations = relations(eventOtp, ({ one }) => ({
+  events: one(events, {
+    fields: [eventOtp.eventId],
+    references: [events.id],
+  }),
 }));
 
 export const event_membersRelations = relations(event_members, ({ one }) => ({
