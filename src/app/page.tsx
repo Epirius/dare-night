@@ -39,9 +39,15 @@ async function SignedInContent() {
           </Button>
         </Link>
       </div>
-      {events.map((e) => (
-        <div key={e.id}>{e.name}</div>
-      ))}
+      <ul className="flex flex-col">
+        {events.map((e) => (
+          <li key={`li-${e.id}`}>
+            <Link href={`/event/${e.id}`} key={`link-${e.id}`}>
+              {e.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </>
   );
 }

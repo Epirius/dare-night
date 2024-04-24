@@ -6,7 +6,7 @@ import { eventOtp, event_members, events } from "./db/schema";
 import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
 import "server-only";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 
@@ -111,4 +111,43 @@ export async function joinEvent(
   }
   revalidatePath("/");
   redirect("/");
+}
+
+export async function isMember(eventId: number) {
+  const userId = auth().userId;
+  if (!userId) {
+    return false;
+  }
+
+  const member = await db.query.event_members.findFirst({
+    where: (event_members, { eq, and }) =>
+      and(eq(event_members.userId, userId), eq(event_members.eventId, eventId)),
+  });
+  return !!member;
+}
+
+export async function getEventData(eventId: number) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+    with: {
+      event_members: true,
+    },
+  });
+  if (!event) {
+    //[TODO: redirect to 404 page]
+    throw new Error("Event not found");
+  }
+
+  return {
+    event,
+    member_count: event.event_members.length,
+    is_admin: event.event_members.some(
+      (m) => m.userId === user.userId && m.role === "admin",
+    ),
+  };
 }
