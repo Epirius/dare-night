@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   index,
   pgEnum,
@@ -127,5 +127,33 @@ export const task_completion_status = createTable(
       example.teamId,
       example.eventId,
     ),
+  }),
+);
+
+export const eventsRelations = relations(events, ({ many }) => ({
+  event_members: many(event_members),
+  teams: many(teams),
+}));
+
+export const event_membersRelations = relations(event_members, ({ one }) => ({
+  events: one(events),
+  teams: one(teams),
+}));
+
+export const teamsRelations = relations(teams, ({ many, one }) => ({
+  event_members: many(event_members),
+  events: one(events),
+}));
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  events: one(events),
+}));
+
+export const taskCompletionStatusRelations = relations(
+  task_completion_status,
+  ({ one }) => ({
+    tasks: one(tasks),
+    teams: one(teams),
+    events: one(events),
   }),
 );

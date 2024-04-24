@@ -1,5 +1,5 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { db } from "~/server/db";
+import { getMyEvents } from "~/server/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +17,16 @@ export default function HomePage() {
 }
 
 async function SignedInContent() {
-  const events = await db.query.events.findMany();
+  const events = await getMyEvents();
+  if (events instanceof Error) {
+    return <div>Error: {events.message}</div>;
+  }
 
   return (
     <>
       <div>Main page</div>
-      {events.map((event) => (
-        <div key={event.id}>{event.name}</div>
+      {events.map((e) => (
+        <div key={e.id}>{e.name}</div>
       ))}
     </>
   );
