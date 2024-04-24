@@ -1,8 +1,10 @@
 # Dare Night
 
 - [Next.js](https://nextjs.org)
-- [Drizzle](https://orm.drizzle.team)
+- [Drizzle for database](https://orm.drizzle.team)
 - [Tailwind CSS](https://tailwindcss.com)
+- [Shadcn for components](https://ui.shadcn.com/)
+- [Clerk for auth](https://clerk.com/)
 
 ## Learn More about T3
 
