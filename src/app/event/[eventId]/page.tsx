@@ -1,3 +1,4 @@
+import { Copy } from "lucide-react";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
@@ -12,6 +13,7 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { deleteEvent, getEventData, isMember } from "~/server/queries";
+import { InviteOthers } from "./_components/inviteOthers";
 
 export default async function EventPage({
   params,
@@ -33,7 +35,7 @@ export default async function EventPage({
         {is_admin && (
           <div>
             <p>You are an admin</p>
-            <Button>invite others</Button>
+            <InviteOthers eventId={id} />
             <DeleteEvent eventId={id} />
           </div>
         )}

@@ -183,3 +183,32 @@ export async function deleteEvent(formData: FormData) {
   revalidatePath("/");
   redirect("/");
 }
+
+export async function createOtpCode(eventId: number, oneTimeUse: boolean) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const member = await db.query.event_members.findFirst({
+    where: and(
+      eq(event_members.userId, user.userId),
+      eq(event_members.eventId, eventId),
+    ),
+  });
+  if (!member) {
+    return { error: "You are not a member of this event" };
+  }
+  if (member.role !== "admin") {
+    return { error: "You are not an admin of this event" };
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  z.string().length(6).parse(otp);
+  await db.insert(eventOtp).values({
+    otp,
+    eventId,
+    oneTimeUse,
+  });
+  return { otp };
+}
