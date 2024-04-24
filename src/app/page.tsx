@@ -1,4 +1,7 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { redirect } from "next/dist/server/api-utils";
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
 import { getMyEvents } from "~/server/queries";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +28,18 @@ async function SignedInContent() {
   return (
     <>
       <div>Main page</div>
+      <div className="flex gap-4">
+        <Link href="/new-event">
+          <Button variant="link" size="lg" className="px-0">
+            Create event
+          </Button>
+        </Link>
+        <Link href="/join-event">
+          <Button variant="link" size="lg" className="px-0">
+            Join Event
+          </Button>
+        </Link>
+      </div>
       {events.map((e) => (
         <div key={e.id}>{e.name}</div>
       ))}
