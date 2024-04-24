@@ -5,10 +5,10 @@ import { db } from "./db";
 import { eventOtp, event_members, events } from "./db/schema";
 import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
-import "server-only";
-import { count, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import "server-only";
 
 export async function createEvent(
   currentState: { error: string },
@@ -150,4 +150,36 @@ export async function getEventData(eventId: number) {
       (m) => m.userId === user.userId && m.role === "admin",
     ),
   };
+}
+
+export async function deleteEvent(formData: FormData) {
+  console.log("delete event", formData.get("eventId"));
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const eventId = z.coerce.number().parse(formData.get("eventId"));
+
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+    with: {
+      event_members: {
+        where: and(
+          eq(event_members.userId, user.userId),
+          eq(event_members.role, "admin"),
+        ),
+      },
+    },
+  });
+
+  if (!event) {
+    return { error: "Could not find the event" };
+  }
+  if (!event.event_members.length) {
+    return { error: "You are not an admin of this event" };
+  }
+  await db.delete(events).where(eq(events.id, eventId));
+  revalidatePath("/");
+  redirect("/");
 }
