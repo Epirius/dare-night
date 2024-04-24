@@ -26,18 +26,19 @@ export async function createEvent(
     return { error: data.error.errors.map((e) => e.message).join(", ") };
   }
 
-  const newEvent = await db
-    .insert(events)
-    .values({ name: data.data.name })
-    .returning();
-  if (!newEvent?.[0]?.id) {
-    return { error: "Failed to create event" };
-  }
-
-  await db
-    .insert(event_members)
-    .values({ userId: user.userId, role: "admin", eventId: newEvent[0].id });
-
+  await db.transaction(async (db) => {
+    const newEvent = await db
+      .insert(events)
+      .values({ name: data.data.name })
+      .returning();
+    if (!newEvent?.[0]?.id) {
+      db.rollback();
+      return { error: "Failed to create event" };
+    }
+    await db
+      .insert(event_members)
+      .values({ userId: user.userId, role: "admin", eventId: newEvent[0].id });
+  });
   redirect("/");
 }
 
