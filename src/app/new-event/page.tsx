@@ -13,6 +13,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { createEvent } from "~/server/queries";
+import { SubmitButton } from "../_components/submitButton";
 
 export default function Page() {
   const [formState, formAction] = useFormState(createEvent, { error: "" });
@@ -38,9 +39,7 @@ export default function Page() {
               </Label>
               <Input type="text" id="name" name="name" />
             </div>
-            <Button variant="default" type="submit">
-              Create
-            </Button>
+            <SubmitButton>Create</SubmitButton>
             {formState?.error && (
               <p className="pt-4 text-sm text-red-500">{formState.error}</p>
             )}

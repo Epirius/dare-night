@@ -12,6 +12,7 @@ import {
   InputOTPSlot,
 } from "~/components/ui/input-otp";
 import { joinEvent } from "~/server/queries";
+import { SubmitButton } from "../_components/submitButton";
 
 export default function JoinEvent() {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -43,7 +44,7 @@ export default function JoinEvent() {
               </InputOTPGroup>
             </InputOTP>
           </div>
-          <SubmitButton ref={buttonRef} />
+          <SubmitButton ref={buttonRef}>Join</SubmitButton>
           {formState?.error && (
             <p className="pt-4 text-sm text-red-500">{formState.error}</p>
           )}
@@ -52,15 +53,3 @@ export default function JoinEvent() {
     </main>
   );
 }
-
-const SubmitButton = forwardRef<HTMLButtonElement>((props, ref) => {
-  const { pending } = useFormStatus();
-  return (
-    <Button disabled={pending} ref={ref}>
-      {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin px-2" />}
-      Submit
-    </Button>
-  );
-});
-
-SubmitButton.displayName = "SubmitButton";
