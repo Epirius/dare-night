@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import "server-only";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 export async function createEvent(
   currentState: { error: string },
@@ -40,6 +41,7 @@ export async function createEvent(
       .insert(event_members)
       .values({ userId: user.userId, role: "admin", eventId: newEvent[0].id });
   });
+  revalidatePath("/");
   redirect("/");
 }
 
@@ -100,5 +102,6 @@ export async function joinEvent(formdata: FormData) {
     console.log(e);
     return { error: "Failed to join event" };
   }
+  revalidatePath("/");
   redirect("/");
 }
