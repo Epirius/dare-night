@@ -1,5 +1,4 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { getMyEvents } from "~/server/queries";
