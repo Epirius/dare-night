@@ -32,6 +32,9 @@ dependencies:
   drizzle-orm:
     specifier: ^0.29.4
     version: 0.29.5(@types/react@18.2.79)(@vercel/postgres@0.8.0)(pg@8.11.5)(postgres@3.4.4)(react@18.2.0)
+  input-otp:
+    specifier: ^1.2.4
+    version: 1.2.4(react-dom@18.2.0)(react@18.2.0)
   lucide-react:
     specifier: ^0.372.0
     version: 0.372.0(react@18.2.0)
@@ -3097,6 +3100,16 @@ packages:
 
   /inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
+
+  /input-otp@1.2.4(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-md6rhmD+zmMnUh5crQNSQxq3keBRYvE3odbr4Qb9g2NWzQv9azi+t1a3X4TBTbh98fsGHgEEJlzbe1q860uGCA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /internal-slot@1.0.7:
     resolution: {integrity: sha512-NGnrKwXzSms2qUUih/ILZ5JBqNTSa1+ZmP6flaIp6KmSElgE9qdndzS3cqjrDovwFdmwsGsLdeFgB6suw+1e9g==}
