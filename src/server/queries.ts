@@ -62,20 +62,27 @@ export async function getMyEvents() {
   return data.map((d) => d.events);
 }
 
-export async function joinEvent(formdata: FormData) {
+export async function joinEvent(
+  currentState: { error: string },
+  formdata: FormData,
+) {
   const user = auth();
   if (!user.userId) {
     redirect("/login");
   }
 
-  const otp = z.string().length(6).parse(formdata.get("otp"));
+  const parsedOtp = z.string().length(6).safeParse(formdata.get("otp"));
+  if (!parsedOtp.success) {
+    return { error: parsedOtp.error.errors.map((e) => e.message).join(", ") };
+  }
+  const otp = parsedOtp.data;
 
   const event = await db.query.eventOtp.findFirst({
     where: (table, { eq, and, gt }) =>
       and(eq(table.otp, otp), gt(table.invalidAfter, new Date())),
   });
   if (!event) {
-    return { error: "Invalid OTP" };
+    return { error: "Invalid or out of date OTP code" };
   }
 
   if (event.oneTimeUse) {
