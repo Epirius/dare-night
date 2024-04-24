@@ -136,24 +136,45 @@ export const eventsRelations = relations(events, ({ many }) => ({
 }));
 
 export const event_membersRelations = relations(event_members, ({ one }) => ({
-  events: one(events),
-  teams: one(teams),
+  events: one(events, {
+    fields: [event_members.eventId],
+    references: [events.id],
+  }),
+  teams: one(teams, {
+    fields: [event_members.teamId],
+    references: [teams.id],
+  }),
 }));
 
 export const teamsRelations = relations(teams, ({ many, one }) => ({
   event_members: many(event_members),
-  events: one(events),
+  events: one(events, {
+    fields: [teams.eventId],
+    references: [events.id],
+  }),
 }));
 
 export const tasksRelations = relations(tasks, ({ one }) => ({
-  events: one(events),
+  events: one(events, {
+    fields: [tasks.eventId],
+    references: [events.id],
+  }),
 }));
 
 export const taskCompletionStatusRelations = relations(
   task_completion_status,
   ({ one }) => ({
-    tasks: one(tasks),
-    teams: one(teams),
-    events: one(events),
+    tasks: one(tasks, {
+      fields: [task_completion_status.taskId],
+      references: [tasks.id],
+    }),
+    teams: one(teams, {
+      fields: [task_completion_status.teamId],
+      references: [teams.id],
+    }),
+    events: one(events, {
+      fields: [task_completion_status.eventId],
+      references: [events.id],
+    }),
   }),
 );

@@ -7,7 +7,6 @@ import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
 import "server-only";
 import { eq } from "drizzle-orm";
-import { removeNull } from "~/utils/typeguard";
 
 export async function createEvent(
   currentState: { error: string },
@@ -48,13 +47,13 @@ export async function getMyEvents() {
     return Error("User not authenticated");
   }
 
-  const res = await db
-    .select({
-      events,
-    })
-    .from(events)
-    .fullJoin(event_members, eq(events.id, event_members.eventId))
-    .where(eq(event_members.userId, userId));
+  const data = await db.query.event_members.findMany({
+    columns: {},
+    where: eq(event_members.userId, userId),
+    with: {
+      events: true,
+    },
+  });
 
-  return res.map((event) => event.events).filter(removeNull);
+  return data.map((d) => d.events);
 }
