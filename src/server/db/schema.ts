@@ -42,7 +42,7 @@ export const eventOtp = createTable(
   {
     id: serial("id").primaryKey(),
     eventId: integer("event_id")
-      .references(() => events.id)
+      .references(() => events.id, { onDelete: "cascade" })
       .notNull(),
     otp: varchar("otp", { length: 6 }).notNull().unique(),
     oneTimeUse: boolean("one_time_use").notNull(),
@@ -66,11 +66,11 @@ export const event_members = createTable(
   {
     id: serial("id").primaryKey(),
     eventId: integer("event_id")
-      .references(() => events.id)
+      .references(() => events.id, { onDelete: "cascade" })
       .notNull(),
     userId: varchar("user_id", { length: 256 }).notNull(),
     teamId: integer("team_id")
-      .references(() => teams.id)
+      .references(() => teams.id, { onDelete: "set default" })
       .default(sql`NULL`),
     role: member_type_enum("role").notNull(),
     createdAt: timestamp("created_at")
@@ -90,7 +90,7 @@ export const teams = createTable(
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 256 }).notNull(),
     eventId: integer("event_id")
-      .references(() => events.id)
+      .references(() => events.id, { onDelete: "cascade" })
       .notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -109,7 +109,7 @@ export const tasks = createTable(
     name: varchar("name", { length: 256 }).notNull(),
     description: varchar("description", { length: 256 }),
     eventId: integer("event_id")
-      .references(() => events.id)
+      .references(() => events.id, { onDelete: "cascade" })
       .notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -126,13 +126,13 @@ export const task_completion_status = createTable(
   {
     id: serial("id").primaryKey(),
     taskId: integer("task_id")
-      .references(() => tasks.id)
+      .references(() => tasks.id, { onDelete: "cascade" })
       .notNull(),
     teamId: integer("team_id")
-      .references(() => teams.id)
+      .references(() => teams.id, { onDelete: "cascade" })
       .notNull(),
     eventId: integer("event_id")
-      .references(() => events.id)
+      .references(() => events.id, { onDelete: "cascade" })
       .notNull(),
     completed: boolean("completed").notNull().default(false),
     completedAt: timestamp("completed").default(sql`NULL`),
