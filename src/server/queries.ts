@@ -2,7 +2,13 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
-import { eventOtp, event_members, events } from "./db/schema";
+import {
+  eventOtp,
+  event_members,
+  events,
+  task_completion_status,
+  tasks,
+} from "./db/schema";
 import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
@@ -153,7 +159,6 @@ export async function getEventData(eventId: number) {
 }
 
 export async function deleteEvent(formData: FormData) {
-  console.log("delete event", formData.get("eventId"));
   const user = auth();
   if (!user.userId) {
     redirect("/login");
@@ -190,17 +195,9 @@ export async function createOtpCode(eventId: number, oneTimeUse: boolean) {
     redirect("/login");
   }
 
-  const member = await db.query.event_members.findFirst({
-    where: and(
-      eq(event_members.userId, user.userId),
-      eq(event_members.eventId, eventId),
-    ),
-  });
-  if (!member) {
-    return { error: "You are not a member of this event" };
-  }
-  if (member.role !== "admin") {
-    return { error: "You are not an admin of this event" };
+  const admin = await isAdmin(eventId, user.userId);
+  if (typeof admin === "object") {
+    return admin;
   }
 
   while (true) {
@@ -217,4 +214,127 @@ export async function createOtpCode(eventId: number, oneTimeUse: boolean) {
       continue;
     }
   }
+}
+
+export async function createTask(
+  currentState: { error: string },
+  formData: FormData,
+) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const data = z
+    .object({
+      name: z
+        .string()
+        .min(3, "Task name must be at least 3 characters")
+        .max(50, "Max task name length is 50 characters"),
+      description: z
+        .string()
+        .max(255, "Max description length is 255 characters")
+        .optional(),
+      eventId: z.coerce.number(),
+    })
+    .safeParse({
+      name: formData.get("name"),
+      description: formData.get("description"),
+      eventId: formData.get("eventId"),
+    });
+
+  if (!data.success) {
+    console.log(data.error.errors.map((e) => e.message).join(", "));
+    return { error: data.error.errors.map((e) => e.message).join(", ") };
+  }
+  const { name, description, eventId } = data.data;
+  const admin = await isAdmin(eventId, user.userId);
+  if (typeof admin === "object") {
+    return admin;
+  }
+
+  const existingEvent = await db.query.tasks.findFirst({
+    where: and(eq(tasks.name, name), eq(tasks.eventId, eventId)),
+  });
+  if (!!existingEvent) {
+    return { error: "Task with that name already exists" };
+  }
+
+  const newTask = await db
+    .insert(tasks)
+    .values({
+      name,
+      description,
+      eventId,
+    })
+    .returning();
+
+  const newTaskId = newTask[0]?.id;
+  if (!newTaskId) {
+    return { error: "Failed to create task" };
+  }
+
+  const teams = await getTeams(eventId);
+  if (teams.length > 0) {
+    console.log(
+      teams.map((team) => ({
+        taskId: newTaskId,
+        teamId: team.id,
+        eventId,
+      })),
+    );
+    await db.insert(task_completion_status).values(
+      teams.map((team) => ({
+        taskId: newTaskId,
+        teamId: team.id,
+        eventId,
+      })),
+    );
+  }
+  revalidatePath(`/event/${eventId}`);
+  redirect(`/event/${eventId}`);
+}
+
+async function isAdmin(
+  eventId: number,
+  userId: string,
+): Promise<boolean | { error: string }> {
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+    with: {
+      event_members: {
+        where: and(
+          eq(event_members.userId, userId),
+          eq(event_members.role, "admin"),
+        ),
+      },
+    },
+  });
+
+  if (!event) {
+    return { error: "Could not find the event" };
+  }
+  if (!event.event_members.length) {
+    return { error: "You are not an admin of this event" };
+  }
+  return true;
+}
+
+async function getTeams(eventId: number) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+    columns: {},
+    with: {
+      teams: true,
+    },
+  });
+  if (!event) {
+    throw new Error("Event not found");
+  }
+  return event.teams;
 }

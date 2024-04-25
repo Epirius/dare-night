@@ -9,9 +9,9 @@ import {
   serial,
   timestamp,
   varchar,
-  boolean,
   unique,
   integer,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -118,6 +118,7 @@ export const tasks = createTable(
   },
   (example) => ({
     nameIndex: index("tasks_idx").on(example.name),
+    unique1: unique("task_name").on(example.name, example.eventId),
   }),
 );
 
@@ -135,8 +136,7 @@ export const task_completion_status = createTable(
       .references(() => events.id, { onDelete: "cascade" })
       .notNull(),
     completed: boolean("completed").notNull().default(false),
-    completedAt: timestamp("completed").default(sql`NULL`),
-    image_url: varchar("image_url", { length: 256 }),
+    completedAt: timestamp("completed_at").default(sql`NULL`),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

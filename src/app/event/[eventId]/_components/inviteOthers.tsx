@@ -1,5 +1,5 @@
 "use client";
-import { Copy, CopyCheck } from "lucide-react";
+import { Copy, CopyCheck, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -39,8 +39,8 @@ export function InviteOthers({ eventId }: { eventId: number }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" onClick={generateCode}>
-          Invite others
+        <Button variant="secondary" onClick={generateCode}>
+          <UserPlus />
         </Button>
       </DialogTrigger>
       <DialogContent>

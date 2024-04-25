@@ -1,4 +1,3 @@
-import { Copy } from "lucide-react";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
@@ -14,6 +13,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { deleteEvent, getEventData, isMember } from "~/server/queries";
 import { InviteOthers } from "./_components/inviteOthers";
+import { Trash2 } from "lucide-react";
+import { CreateTask } from "./_components/createTask";
 
 export default async function EventPage({
   params,
@@ -30,15 +31,19 @@ export default async function EventPage({
   return (
     <main>
       <div>
-        <h1>Event: {event.name}</h1>
-        <p>member(s): {member_count}</p>
-        {is_admin && (
+        <header className="flex flex-wrap justify-between border-b-2 border-accent pb-2">
+          <h1 className=" text-3xl font-semibold ">{event.name}</h1>
           <div>
-            <p>You are an admin</p>
-            <InviteOthers eventId={id} />
-            <DeleteEvent eventId={id} />
+            {is_admin && (
+              <div className="flex flex-wrap gap-4">
+                <CreateTask eventId={id} />
+                <InviteOthers eventId={id} />
+                <DeleteEvent eventId={id} />
+              </div>
+            )}
           </div>
-        )}
+        </header>
+        <p>member(s): {member_count}</p>
       </div>
     </main>
   );
@@ -48,7 +53,9 @@ function DeleteEvent({ eventId }: { eventId: number }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Delete Event</Button>
+        <Button variant="destructive">
+          <Trash2 />
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
