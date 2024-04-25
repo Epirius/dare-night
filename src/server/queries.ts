@@ -320,7 +320,7 @@ async function isAdmin(
   return true;
 }
 
-async function getTeams(eventId: number) {
+export async function getTeams(eventId: number) {
   const user = auth();
   if (!user.userId) {
     redirect("/login");
@@ -337,4 +337,20 @@ async function getTeams(eventId: number) {
     throw new Error("Event not found");
   }
   return event.teams;
+}
+
+export async function getTeamsWithMembers(eventId: number) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const teams = await getTeams(eventId);
+  const withMembers = teams.map(async (team) => {
+    const members = await db.query.event_members.findMany({
+      where: eq(event_members.teamId, team.id),
+    });
+    return { ...team, members };
+  });
+  return withMembers;
 }
