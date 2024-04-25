@@ -1,10 +1,8 @@
 "use client";
 
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { Loader2 } from "lucide-react";
-import { forwardRef, useRef } from "react";
-import { useFormStatus, useFormState } from "react-dom";
-import { Button } from "~/components/ui/button";
+import { useRef } from "react";
+import { useFormState } from "react-dom";
 import {
   InputOTP,
   InputOTPGroup,
