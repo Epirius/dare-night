@@ -110,7 +110,7 @@ export async function joinEvent(
     return { error: "Failed to join event" };
   }
   revalidatePath("/");
-  redirect("/");
+  redirect(`/event/${event.eventId}`);
 }
 
 export async function isMember(eventId: number) {
