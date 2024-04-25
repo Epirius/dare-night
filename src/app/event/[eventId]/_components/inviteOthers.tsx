@@ -1,5 +1,5 @@
 "use client";
-import { Copy } from "lucide-react";
+import { Copy, CopyCheck } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -18,10 +18,13 @@ import { createOtpCode } from "~/server/queries";
 export function InviteOthers({ eventId }: { eventId: number }) {
   "use client";
   const [code, setCode] = useState<string | undefined>(undefined);
+  const [clicked, setClicked] = useState<boolean>(false);
 
   const copyCode = async () => {
     if (!code) return;
     await navigator.clipboard.writeText(code.toString());
+    setClicked(true);
+    setTimeout(() => setClicked(false), 400);
   };
 
   const generateCode = async () => {
@@ -56,7 +59,8 @@ export function InviteOthers({ eventId }: { eventId: number }) {
           />
           <Button type="submit" size="sm" onClick={copyCode}>
             <span className="sr-only">Copy</span>
-            <Copy />
+            {!clicked && <Copy />}
+            {clicked && <CopyCheck />}
           </Button>
         </div>
         <DialogFooter>
