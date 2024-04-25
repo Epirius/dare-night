@@ -8,6 +8,7 @@ import {
   events,
   task_completion_status,
   tasks,
+  teams,
 } from "./db/schema";
 import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
@@ -415,6 +416,64 @@ export async function quitTeam(formData: FormData) {
     .where(
       and(eq(event_members.userId, userId), eq(event_members.teamId, teamId)),
     );
+
+  const remainingMember = await db.query.event_members.findFirst({
+    where: eq(event_members.teamId, teamId),
+  });
+  if (!remainingMember) {
+    await db.delete(teams).where(eq(teams.id, teamId));
+  }
+  revalidatePath(`/event/${eventId}`);
+}
+
+export async function createTeam(formData: FormData) {
+  const userId = auth().userId;
+  if (!userId) {
+    redirect("/login");
+  }
+
+  const { eventId, teamName } = z
+    .object({
+      eventId: z.coerce.number(),
+      teamName: z.string().min(3).max(50),
+    })
+    .parse({
+      eventId: formData.get("eventId"),
+      teamName: formData.get("teamName"),
+    });
+
+  const user = await db.query.event_members.findFirst({
+    where: and(
+      eq(event_members.userId, userId),
+      eq(event_members.eventId, eventId),
+    ),
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  if (user.teamId) {
+    throw new Error("User already in a team");
+  }
+
+  const team = await db
+    .insert(teams)
+    .values({
+      name: teamName,
+      eventId,
+    })
+    .returning();
+
+  const newTeamId = team[0]?.id;
+  if (!newTeamId) {
+    throw new Error("Failed to create team");
+  }
+
+  await db
+    .update(event_members)
+    .set({
+      teamId: newTeamId,
+    })
+    .where(eq(event_members.id, user.id));
   revalidatePath(`/event/${eventId}`);
 }
 

@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import {
+  createTeam,
   deleteEvent,
   getEventData,
   getTeamsWithMembers,
@@ -23,6 +24,13 @@ import { Trash2 } from "lucide-react";
 import { CreateTask } from "./_components/createTask";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { TeamCard } from "./_components/teamCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 
 export default async function EventPage({
   params,
@@ -108,7 +116,37 @@ async function TeamPage({ eventId }: { eventId: number }) {
   const userTeamId = await getUserTeamId(eventId);
   return (
     <div className="flex flex-col gap-4 pt-2">
-      <Button variant="outline">Create team TODO IMPLEMENT</Button>
+      {userTeamId === null && (
+        <Dialog>
+          <DialogTrigger asChild className="w-full">
+            <Button variant="outline" className="py-6 text-lg font-semibold">
+              Create team
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>Create Team</DialogHeader>
+            <form action={createTeam}>
+              <input
+                type="number"
+                name="eventId"
+                value={eventId}
+                hidden
+                aria-hidden
+              />
+              <input
+                type="text"
+                name="teamName"
+                placeholder="Team name"
+                minLength={3}
+                maxLength={50}
+              />
+              <DialogFooter>
+                <Button>Create</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
       {teams.map(async (t) => {
         const team = await t;
         return <TeamCard key={team.id} team={team} userTeamId={userTeamId} />;
