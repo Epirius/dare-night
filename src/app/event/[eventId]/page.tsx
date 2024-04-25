@@ -15,15 +15,14 @@ import {
   deleteEvent,
   getEventData,
   getTeamsWithMembers,
+  getUserTeamId,
   isMember,
 } from "~/server/queries";
 import { InviteOthers } from "./_components/inviteOthers";
 import { Trash2 } from "lucide-react";
 import { CreateTask } from "./_components/createTask";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { Collapsible } from "~/components/ui/collapsible";
 import { TeamCard } from "./_components/teamCard";
-import { auth } from "@clerk/nextjs/server";
 
 export default async function EventPage({
   params,
@@ -32,13 +31,11 @@ export default async function EventPage({
 }) {
   const id = z.coerce.number().parse(params.eventId);
   const is_member = await isMember(id);
-  const user = auth();
   if (!is_member) {
     redirect("/");
   }
 
   const { event, member_count, is_admin } = await getEventData(id);
-  const userData = event.event_members.find((m) => m.userId === user.userId);
   return (
     <main>
       <div>
@@ -106,36 +103,16 @@ function DeleteEvent({ eventId }: { eventId: number }) {
   );
 }
 
-async function TeamPage({
-  eventId,
-  userData,
-}: {
-  eventId: number;
-  userData?: UserData;
-}) {
+async function TeamPage({ eventId }: { eventId: number }) {
   const teams = await getTeamsWithMembers(eventId);
+  const userTeamId = await getUserTeamId(eventId);
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 pt-2">
+      <Button variant="outline">Create team TODO IMPLEMENT</Button>
       {teams.map(async (t) => {
         const team = await t;
-        return (
-          <TeamCard
-            key={team.id}
-            team={team}
-            userTeamId={userData?.teamId ?? undefined}
-          />
-        );
+        return <TeamCard key={team.id} team={team} userTeamId={userTeamId} />;
       })}
     </div>
   );
 }
-
-type UserData = {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date | null;
-  eventId: number;
-  userId: string;
-  teamId: number | null;
-  role: "admin" | "member";
-};

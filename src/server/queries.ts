@@ -354,3 +354,81 @@ export async function getTeamsWithMembers(eventId: number) {
   });
   return withMembers;
 }
+
+export async function joinTeam(formData: FormData) {
+  const userId = auth().userId;
+  if (!userId) {
+    redirect("/login");
+  }
+  const { eventId, teamId } = z
+    .object({
+      eventId: z.coerce.number(),
+      teamId: z.coerce.number(),
+    })
+    .parse({
+      eventId: formData.get("eventId"),
+      teamId: formData.get("teamId"),
+    });
+
+  const user = await db.query.event_members.findFirst({
+    where: and(
+      eq(event_members.userId, userId),
+      eq(event_members.eventId, eventId),
+    ),
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  if (user.teamId) {
+    throw new Error("User already in a team");
+  }
+
+  await db
+    .update(event_members)
+    .set({
+      teamId,
+    })
+    .where(eq(event_members.id, user.id));
+  revalidatePath(`/event/${eventId}`);
+}
+
+export async function quitTeam(formData: FormData) {
+  const userId = auth().userId;
+  if (!userId) {
+    redirect("/login");
+  }
+  const { eventId, teamId } = z
+    .object({
+      eventId: z.coerce.number(),
+      teamId: z.coerce.number(),
+    })
+    .parse({
+      eventId: formData.get("eventId"),
+      teamId: formData.get("teamId"),
+    });
+
+  await db
+    .update(event_members)
+    .set({
+      teamId: null,
+    })
+    .where(
+      and(eq(event_members.userId, userId), eq(event_members.teamId, teamId)),
+    );
+  revalidatePath(`/event/${eventId}`);
+}
+
+export async function getUserTeamId(eventId: number) {
+  const userId = auth().userId;
+  if (!userId) {
+    redirect("/login");
+  }
+  const user = await db.query.event_members.findFirst({
+    where: and(
+      eq(event_members.userId, userId),
+      eq(event_members.eventId, eventId),
+    ),
+  });
+
+  return user?.teamId ?? null;
+}

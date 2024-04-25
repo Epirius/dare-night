@@ -1,5 +1,5 @@
 "use client";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, DiamondPlus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
@@ -8,6 +8,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
+import { joinTeam, quitTeam } from "~/server/queries";
 
 export type TeamCardProps = {
   members: {
@@ -31,7 +32,7 @@ export function TeamCard({
   userTeamId,
 }: {
   team: TeamCardProps;
-  userTeamId?: number;
+  userTeamId: number | null;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -40,9 +41,45 @@ export function TeamCard({
         <CardHeader>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">{team.name}</h2>
-            <div className="flex items-center gap-4">
-              {!userTeamId && <Button>Join team</Button>}
-              {userTeamId === team.id && <Button>Quit team</Button>}
+            <div className="flex flex-wrap-reverse items-center gap-2">
+              {!userTeamId && (
+                <form action={joinTeam}>
+                  <input
+                    aria-hidden
+                    type="hidden"
+                    name="teamId"
+                    value={team.id}
+                  />
+                  <input
+                    aria-hidden
+                    type="hidden"
+                    name="eventId"
+                    value={team.eventId}
+                  />
+                  <Button variant="ghost" size="sm">
+                    <DiamondPlus />
+                  </Button>
+                </form>
+              )}
+              {userTeamId === team.id && (
+                <form action={quitTeam}>
+                  <input
+                    aria-hidden
+                    type="hidden"
+                    name="teamId"
+                    value={team.id}
+                  />
+                  <input
+                    aria-hidden
+                    type="hidden"
+                    name="eventId"
+                    value={team.eventId}
+                  />
+                  <Button variant="destructive" size="sm">
+                    <Trash2 />
+                  </Button>
+                </form>
+              )}
               <CollapsibleTrigger asChild>
                 <Button variant="ghost" size="sm">
                   {!isOpen && <ChevronDown />}
