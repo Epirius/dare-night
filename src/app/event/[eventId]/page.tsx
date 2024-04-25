@@ -21,6 +21,9 @@ import { InviteOthers } from "./_components/inviteOthers";
 import { Trash2 } from "lucide-react";
 import { CreateTask } from "./_components/createTask";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Collapsible } from "~/components/ui/collapsible";
+import { TeamCard } from "./_components/teamCard";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function EventPage({
   params,
@@ -29,11 +32,13 @@ export default async function EventPage({
 }) {
   const id = z.coerce.number().parse(params.eventId);
   const is_member = await isMember(id);
+  const user = auth();
   if (!is_member) {
     redirect("/");
   }
 
   const { event, member_count, is_admin } = await getEventData(id);
+  const userData = event.event_members.find((m) => m.userId === user.userId);
   return (
     <main>
       <div>
@@ -101,25 +106,36 @@ function DeleteEvent({ eventId }: { eventId: number }) {
   );
 }
 
-async function TeamPage({ eventId }: { eventId: number }) {
+async function TeamPage({
+  eventId,
+  userData,
+}: {
+  eventId: number;
+  userData?: UserData;
+}) {
   const teams = await getTeamsWithMembers(eventId);
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       {teams.map(async (t) => {
         const team = await t;
         return (
-          <div key={team.id}>
-            <h2>{team.name}</h2>
-            <ul>
-              {team.members.map((member) => (
-                <li key={member.userId}>
-                  member: {member.userId} {member.role}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <TeamCard
+            key={team.id}
+            team={team}
+            userTeamId={userData?.teamId ?? undefined}
+          />
         );
       })}
     </div>
   );
 }
+
+type UserData = {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date | null;
+  eventId: number;
+  userId: string;
+  teamId: number | null;
+  role: "admin" | "member";
+};
