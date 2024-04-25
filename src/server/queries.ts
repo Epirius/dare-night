@@ -203,12 +203,18 @@ export async function createOtpCode(eventId: number, oneTimeUse: boolean) {
     return { error: "You are not an admin of this event" };
   }
 
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  z.string().length(6).parse(otp);
-  await db.insert(eventOtp).values({
-    otp,
-    eventId,
-    oneTimeUse,
-  });
-  return { otp };
+  while (true) {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    z.string().length(6).parse(otp);
+    try {
+      await db.insert(eventOtp).values({
+        otp,
+        eventId,
+        oneTimeUse,
+      });
+      return { otp };
+    } catch (e) {
+      continue;
+    }
+  }
 }
