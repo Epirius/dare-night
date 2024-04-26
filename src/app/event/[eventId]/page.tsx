@@ -31,6 +31,7 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { User, clerkClient } from "@clerk/nextjs/server";
 
 export default async function EventPage({
   params,
@@ -149,7 +150,27 @@ async function TeamPage({ eventId }: { eventId: number }) {
       )}
       {teams.map(async (t) => {
         const team = await t;
-        return <TeamCard key={team.id} team={team} userTeamId={userTeamId} />;
+        const teamWithClerkUser = await Promise.all(
+          team.members.map(async (member) => {
+            const clerkUser: User = await clerkClient.users.getUser(
+              member.userId,
+            );
+            const userData = {
+              name: clerkUser.fullName,
+              username: clerkUser.username,
+              imageUrl: clerkUser.imageUrl,
+            };
+            return { ...member, userData };
+          }),
+        );
+
+        return (
+          <TeamCard
+            key={team.id}
+            team={{ ...team, members: teamWithClerkUser }}
+            userTeamId={userTeamId}
+          />
+        );
       })}
     </div>
   );

@@ -12,6 +12,11 @@ import { joinTeam, quitTeam } from "~/server/queries";
 
 export type TeamCardProps = {
   members: {
+    userData: {
+      name: string | null;
+      username: string | null;
+      imageUrl: string;
+    };
     eventId: number;
     id: number;
     createdAt: Date;
@@ -91,12 +96,19 @@ export function TeamCard({
         </CardHeader>
         <CollapsibleContent>
           <CardContent>
-            <ul>
-              {team.members.map((member) => (
-                <li key={member.userId}>
-                  member: {member.userId} {member.role}
-                </li>
-              ))}
+            <h3 className="text-lg font-semibold">Members:</h3>
+            <ul className="pl-4">
+              {team.members.map((member) => {
+                return (
+                  <li key={member.userId}>
+                    <p>
+                      {member.userData.name ??
+                        member.userData.username ??
+                        member.id}
+                    </p>
+                  </li>
+                );
+              })}
             </ul>
           </CardContent>
         </CollapsibleContent>
