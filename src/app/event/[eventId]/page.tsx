@@ -15,6 +15,7 @@ import {
   createTeam,
   deleteEvent,
   getEventData,
+  getTasks,
   getTeamsWithMembers,
   getUserTeamId,
   isMember,
@@ -31,7 +32,8 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { User, clerkClient } from "@clerk/nextjs/server";
+import { type User, clerkClient } from "@clerk/nextjs/server";
+import { TaskCard } from "./_components/taskCard";
 
 export default async function EventPage({
   params,
@@ -45,6 +47,8 @@ export default async function EventPage({
   }
 
   const { event, member_count, is_admin } = await getEventData(id);
+  const userTeamId = await getUserTeamId(event.id);
+  const taskData = await getTasks(event.id, userTeamId ?? undefined);
   return (
     <main>
       <div>
@@ -66,7 +70,29 @@ export default async function EventPage({
             <TabsTrigger value="teams">Teams</TabsTrigger>
           </TabsList>
           <TabsContent value="home">
-            <div>Home</div>
+            <div>
+              <h2>Home</h2>
+              {taskData.length > 0 && (
+                <h3 className="pb-4 pt-6 text-2xl font-semibold">Tasks:</h3>
+              )}
+              {taskData.length === 0 && <p>No tasks yet</p>}
+              {taskData
+                .filter((task) => !task.completionData?.completed ?? true)
+                .map((task) => {
+                  return <TaskCard key={`task-card-${task.id}`} {...task} />;
+                })}
+              {taskData[0]?.completionData &&
+                taskData.find((task) => task.completionData?.completed) && (
+                  <h3 className="pb-4 pt-6 text-2xl font-semibold">
+                    completed tasks:
+                  </h3>
+                )}
+              {taskData
+                .filter((task) => task.completionData?.completed ?? false)
+                .map((task) => {
+                  return <TaskCard key={`task-card-${task.id}`} {...task} />;
+                })}
+            </div>
           </TabsContent>
           <TabsContent value="teams">
             <TeamPage eventId={id} />
@@ -112,9 +138,14 @@ function DeleteEvent({ eventId }: { eventId: number }) {
   );
 }
 
-async function TeamPage({ eventId }: { eventId: number }) {
+async function TeamPage({
+  eventId,
+  userTeamId,
+}: {
+  eventId: number;
+  userTeamId?: number;
+}) {
   const teams = await getTeamsWithMembers(eventId);
-  const userTeamId = await getUserTeamId(eventId);
   return (
     <div className="flex flex-col gap-4 pt-2">
       {userTeamId === null && (
@@ -168,7 +199,7 @@ async function TeamPage({ eventId }: { eventId: number }) {
           <TeamCard
             key={team.id}
             team={{ ...team, members: teamWithClerkUser }}
-            userTeamId={userTeamId}
+            userTeamId={userTeamId ?? null}
           />
         );
       })}

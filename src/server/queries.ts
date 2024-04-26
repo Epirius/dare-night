@@ -13,7 +13,7 @@ import {
 import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
-import { z } from "zod";
+import { unknown, z } from "zod";
 import { revalidatePath } from "next/cache";
 import "server-only";
 
@@ -503,4 +503,49 @@ export async function getUserTeamId(eventId: number) {
   });
 
   return user?.teamId ?? null;
+}
+
+export async function getTasks(eventId: number, userTeamId?: number) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const taskList = await db.query.tasks.findMany({
+    where: eq(tasks.eventId, eventId),
+  });
+
+  const data = await Promise.all(
+    taskList.map(async (task) => {
+      if (!userTeamId) {
+        return { ...task, completionData: undefined };
+      }
+      let completionData = await db.query.task_completion_status.findFirst({
+        where: and(
+          eq(task_completion_status.taskId, task.id),
+          eq(task_completion_status.teamId, userTeamId),
+        ),
+      });
+
+      if (!completionData) {
+        const newInsert = await db
+          .insert(task_completion_status)
+          .values({
+            taskId: task.id,
+            teamId: userTeamId,
+            eventId,
+          })
+          .returning();
+        completionData = newInsert[0];
+      }
+
+      if (!completionData) {
+        throw new Error("Failed to create task completion status");
+      }
+
+      return { ...task, completionData };
+    }),
+  );
+
+  return data;
 }
