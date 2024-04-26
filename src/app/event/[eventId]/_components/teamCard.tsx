@@ -37,7 +37,7 @@ export function TeamCard({
   userTeamId,
 }: {
   team: TeamCardProps;
-  userTeamId: number | null;
+  userTeamId: number | undefined;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   return (

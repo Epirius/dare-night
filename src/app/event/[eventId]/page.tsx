@@ -95,7 +95,7 @@ export default async function EventPage({
             </div>
           </TabsContent>
           <TabsContent value="teams">
-            <TeamPage eventId={id} />
+            <TeamPage eventId={id} userTeamId={userTeamId ?? undefined} />
           </TabsContent>
         </Tabs>
       </div>
@@ -146,6 +146,7 @@ async function TeamPage({
   userTeamId?: number;
 }) {
   const teams = await getTeamsWithMembers(eventId);
+
   return (
     <div className="flex flex-col gap-4 pt-2">
       {userTeamId === null && (
@@ -199,7 +200,7 @@ async function TeamPage({
           <TeamCard
             key={team.id}
             team={{ ...team, members: teamWithClerkUser }}
-            userTeamId={userTeamId ?? null}
+            userTeamId={userTeamId}
           />
         );
       })}
