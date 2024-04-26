@@ -474,6 +474,19 @@ export async function createTeam(formData: FormData) {
       teamId: newTeamId,
     })
     .where(eq(event_members.id, user.id));
+
+  const existingTasks = await db.query.tasks.findMany({
+    where: eq(tasks.eventId, eventId),
+  });
+
+  for (const task of existingTasks) {
+    await db.insert(task_completion_status).values({
+      taskId: task.id,
+      teamId: newTeamId,
+      eventId,
+    });
+  }
+
   revalidatePath(`/event/${eventId}`);
 }
 
