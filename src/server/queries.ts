@@ -16,6 +16,7 @@ import { and, eq } from "drizzle-orm";
 import { unknown, z } from "zod";
 import { revalidatePath } from "next/cache";
 import "server-only";
+import { pusherServer } from "~/lib/pusherServer";
 
 export async function createEvent(
   currentState: { error: string },
@@ -600,6 +601,21 @@ export async function toggleCompleteTask(formData: FormData) {
     .where(eq(task_completion_status.id, completionData.id))
     .returning();
 
+  await pusherServer.trigger(`task-${eventId}`, "task-updated", newStatus[0]);
   revalidatePath(`/event/${eventId}`);
   return newStatus;
+}
+
+export async function getTaskCompletionStatus(
+  eventId: number,
+  taskId: number,
+  teamId: number,
+) {
+  const completionData = await db.query.task_completion_status.findFirst({
+    where: and(
+      eq(task_completion_status.taskId, taskId),
+      eq(task_completion_status.teamId, teamId),
+    ),
+  });
+  return completionData;
 }

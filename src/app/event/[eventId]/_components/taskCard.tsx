@@ -1,9 +1,8 @@
-import { Circle, CircleCheck } from "lucide-react";
-import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
-import { toggleCompleteTask } from "~/server/queries";
+import { getTaskCompletionStatus } from "~/server/queries";
+import { TaskCompletedButton } from "./taskCompletionStatus";
 
-type TaskCardProps = {
+export type TaskCardProps = {
   id: number;
   name: string;
   createdAt: Date;
@@ -23,12 +22,24 @@ type TaskCardProps = {
 };
 
 export async function TaskCard(data: TaskCardProps) {
+  const getData = async () => {
+    "use server";
+    const eventId = data.eventId;
+    const taskId = data.completionData?.taskId;
+    const teamId = data.completionData?.teamId;
+    if (!eventId || !taskId || !teamId) {
+      return undefined;
+    }
+    const result = await getTaskCompletionStatus(eventId, taskId, teamId);
+    return result;
+  };
   return (
     <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between">
           <h2>{data.name}</h2>
-          <form action={toggleCompleteTask}>
+          <TaskCompletedButton data={data} getData={getData} />
+          {/* <form action={toggleCompleteTask}>
             <input
               value={data.eventId}
               type="number"
@@ -57,7 +68,7 @@ export async function TaskCard(data: TaskCardProps) {
                 <CircleCheck className="  text-lime-500 group-hover:hidden" />
               </Button>
             )}
-          </form>
+          </form> */}
         </div>
       </CardHeader>
       <p className="px-6 pb-8">{data.description}</p>
