@@ -149,7 +149,7 @@ async function TeamPage({
 
   return (
     <div className="flex flex-col gap-4 pt-2">
-      {userTeamId === null && (
+      {!userTeamId && (
         <Dialog>
           <DialogTrigger asChild className="w-full">
             <Button variant="outline" className="py-6 text-lg font-semibold">
