@@ -518,30 +518,31 @@ export async function getTasks(eventId: number, userTeamId?: number) {
 
   const data = await Promise.all(
     taskList.map(async (task) => {
-      if (!userTeamId) {
-        return { ...task, completionData: undefined };
-      }
-      let completionData = await db.query.task_completion_status.findFirst({
-        where: and(
-          eq(task_completion_status.taskId, task.id),
-          eq(task_completion_status.teamId, userTeamId),
-        ),
-      });
+      let completionData = undefined;
 
-      if (!completionData) {
-        const newInsert = await db
-          .insert(task_completion_status)
-          .values({
-            taskId: task.id,
-            teamId: userTeamId,
-            eventId,
-          })
-          .returning();
-        completionData = newInsert[0];
-      }
+      if (userTeamId) {
+        completionData = await db.query.task_completion_status.findFirst({
+          where: and(
+            eq(task_completion_status.taskId, task.id),
+            eq(task_completion_status.teamId, userTeamId),
+          ),
+        });
 
-      if (!completionData) {
-        throw new Error("Failed to create task completion status");
+        if (!completionData) {
+          const newInsert = await db
+            .insert(task_completion_status)
+            .values({
+              taskId: task.id,
+              teamId: userTeamId,
+              eventId,
+            })
+            .returning();
+          completionData = newInsert[0];
+        }
+
+        if (!completionData) {
+          throw new Error("Failed to create task completion status");
+        }
       }
 
       return { ...task, completionData };

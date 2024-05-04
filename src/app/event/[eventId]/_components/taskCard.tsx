@@ -1,5 +1,5 @@
+"use client";
 import { Card, CardHeader } from "~/components/ui/card";
-import { getTaskCompletionStatus } from "~/server/queries";
 import { TaskCompletedButton } from "./taskCompletionStatus";
 
 export type TaskCardProps = {
@@ -21,24 +21,13 @@ export type TaskCardProps = {
   };
 };
 
-export async function TaskCard(data: TaskCardProps) {
-  const getData = async () => {
-    "use server";
-    const eventId = data.eventId;
-    const taskId = data.completionData?.taskId;
-    const teamId = data.completionData?.teamId;
-    if (!eventId || !taskId || !teamId) {
-      return undefined;
-    }
-    const result = await getTaskCompletionStatus(eventId, taskId, teamId);
-    return result;
-  };
+export function TaskCard(data: TaskCardProps) {
   return (
     <Card>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between">
           <h2>{data.name}</h2>
-          <TaskCompletedButton data={data} getData={getData} />
+          <TaskCompletedButton data={data} />
           {/* <form action={toggleCompleteTask}>
             <input
               value={data.eventId}

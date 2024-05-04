@@ -33,7 +33,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { type User, clerkClient } from "@clerk/nextjs/server";
-import { TaskCard } from "./_components/taskCard";
+import HomeTab from "./_components/homeTab";
 
 export default async function EventPage({
   params,
@@ -70,29 +70,11 @@ export default async function EventPage({
             <TabsTrigger value="teams">Teams</TabsTrigger>
           </TabsList>
           <TabsContent value="home">
-            <div>
-              <h2>Home</h2>
-              {taskData.length > 0 && (
-                <h3 className="pb-4 pt-6 text-2xl font-semibold">Tasks:</h3>
-              )}
-              {taskData.length === 0 && <p>No tasks yet</p>}
-              {taskData
-                .filter((task) => !task.completionData?.completed ?? true)
-                .map((task) => {
-                  return <TaskCard key={`task-card-${task.id}`} {...task} />;
-                })}
-              {taskData[0]?.completionData &&
-                taskData.find((task) => task.completionData?.completed) && (
-                  <h3 className="pb-4 pt-6 text-2xl font-semibold">
-                    completed tasks:
-                  </h3>
-                )}
-              {taskData
-                .filter((task) => task.completionData?.completed ?? false)
-                .map((task) => {
-                  return <TaskCard key={`task-card-${task.id}`} {...task} />;
-                })}
-            </div>
+            <HomeTab
+              taskData={taskData}
+              userTeamId={userTeamId}
+              eventId={event.id}
+            />
           </TabsContent>
           <TabsContent value="teams">
             <TeamPage eventId={id} userTeamId={userTeamId ?? undefined} />
