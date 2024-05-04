@@ -122,6 +122,24 @@ export const tasks = createTable(
   }),
 );
 
+export const task_proof = createTable("task_proof", {
+  id: serial("id").primaryKey(),
+  taskId: integer("task_id")
+    .references(() => tasks.id, { onDelete: "cascade" })
+    .notNull(),
+  teamId: integer("team_id")
+    .references(() => teams.id, { onDelete: "cascade" })
+    .notNull(),
+  eventId: integer("event_id")
+    .references(() => events.id, { onDelete: "cascade" })
+    .notNull(),
+  url: varchar("url", { length: 256 }).notNull(),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt"),
+});
+
 export const task_completion_status = createTable(
   "task_completion_status",
   {
@@ -152,10 +170,26 @@ export const task_completion_status = createTable(
   }),
 );
 
+export const event_proofRelations = relations(task_proof, ({ one }) => ({
+  tasks: one(tasks, {
+    fields: [task_proof.taskId],
+    references: [tasks.id],
+  }),
+  teams: one(teams, {
+    fields: [task_proof.teamId],
+    references: [teams.id],
+  }),
+  events: one(events, {
+    fields: [task_proof.eventId],
+    references: [events.id],
+  }),
+}));
+
 export const eventsRelations = relations(events, ({ many }) => ({
   event_members: many(event_members),
   teams: many(teams),
   eventOtp: many(eventOtp),
+  task_proof: many(task_proof),
 }));
 
 export const eventOtpRelations = relations(eventOtp, ({ one }) => ({
@@ -182,13 +216,15 @@ export const teamsRelations = relations(teams, ({ many, one }) => ({
     fields: [teams.eventId],
     references: [events.id],
   }),
+  task_proof: many(task_proof),
 }));
 
-export const tasksRelations = relations(tasks, ({ one }) => ({
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
   events: one(events, {
     fields: [tasks.eventId],
     references: [events.id],
   }),
+  task_proof: many(task_proof),
 }));
 
 export const taskCompletionStatusRelations = relations(
