@@ -1,6 +1,8 @@
 "use client";
 import { Card, CardHeader } from "~/components/ui/card";
-import { TaskCompletedButton } from "./taskCompletionStatus";
+import { toggleCompleteTask } from "~/server/queries";
+import { Button } from "~/components/ui/button";
+import { Circle, CircleCheck } from "lucide-react";
 
 export type TaskCardProps = {
   id: number;
@@ -27,13 +29,13 @@ export function TaskCard(data: TaskCardProps) {
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between">
           <h2>{data.name}</h2>
-          <TaskCompletedButton data={data} />
-          {/* <form action={toggleCompleteTask}>
+          <form action={toggleCompleteTask}>
             <input
               value={data.eventId}
               type="number"
               name="eventId"
               hidden
+              readOnly
               aria-hidden
             />
             <input
@@ -42,22 +44,21 @@ export function TaskCard(data: TaskCardProps) {
               name="taskId"
               hidden
               aria-hidden
+              readOnly
             />
             {!data.completionData?.completed && (
               <Button size="icon" variant="ghost" className="group">
                 <Circle className="group-hover:hidden" />
                 <CircleCheck className=" hidden text-lime-500 group-hover:block" />
               </Button>
-              // </form>
             )}
             {data.completionData?.completed && (
-              // <form action={toggleCompleteTask}>
               <Button size="icon" variant="ghost" className="group">
                 <Circle className="hidden text-red-500 group-hover:block" />
                 <CircleCheck className="  text-lime-500 group-hover:hidden" />
               </Button>
             )}
-          </form> */}
+          </form>
         </div>
       </CardHeader>
       <p className="px-6 pb-8">{data.description}</p>
