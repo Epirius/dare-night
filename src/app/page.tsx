@@ -1,8 +1,9 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
-import { getMyEvents } from "~/server/queries";
+import { getMyEvents, getEventData } from "~/server/queries";
 import { Card, CardTitle, CardDescription} from "~/components/ui/card"
+import { z } from "zod";
 export const dynamic = "force-dynamic";
 import { CirclePlus, CalendarPlus } from 'lucide-react';
 import EventCard from "~/components/eventCard";
@@ -16,7 +17,7 @@ export default function HomePage() {
         <h2 className="flex w-full justify-center">Sign in above</h2>
       </SignedOut>
       <SignedIn>
-        <SignedInContent />
+        <SignedInContent/>
       </SignedIn>
     </main>
   );
@@ -24,9 +25,12 @@ export default function HomePage() {
 
 async function SignedInContent() {
   const events = await getMyEvents();
-  if (events instanceof Error) {
+
+    if (events instanceof Error) {
     return <div>Error: {events.message}</div>;
   }
+  const eventDataPromises = events.map(event => getEventData(event.id));
+  const eventsData = await Promise.all(eventDataPromises);
 
   return (
     <Card>
@@ -46,19 +50,12 @@ async function SignedInContent() {
       </div>
         <div className="flex justify-center items-center h-full px-4">
             <ul className="flex flex-col items-center w-full py-5">
-                {events.map((e) => (
-                    <li key={`li-${e.id}`} className="w-full flex justify-center mb-4 last:mb-0 py-1">
-                        <EventCard link={`/event/${e.id}`} name={e.name}/>
+                {eventsData.map((e) => (
+                    <li key={`li-${e.event.id}`} className="w-full flex justify-center mb-4 last:mb-0 py-1">
+                        <EventCard link={`/event/${e.event.id}`} name={e.event.name} members={e.member_count}/>
                     </li>
                 ))}
-        {/*{events.map((e) => (*/}
-        {/*  <li key={`li-${e.id}`}>*/}
-        {/*    <Link href={`/event/${e.id}`} key={`link-${e.id}`}>*/}
-        {/*      {e.name}*/}
-        {/*    </Link>*/}
-        {/*  </li>*/}
-        {/*))}*/}
-      </ul>
+            </ul>
         </div>
     </Card>
   );
