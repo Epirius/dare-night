@@ -52,7 +52,13 @@ export default function HomeTab({
       {data
         .filter((task) => !task.completionData?.completed ?? true)
         .map((task) => {
-          return <TaskCard key={`task-card-${task.id}`} {...task} />;
+          return (
+            <TaskCard
+              key={`task-card-${task.id}`}
+              data={task}
+              teamId={userTeamId}
+            />
+          );
         })}
       {data[0]?.completionData &&
         data.find((task) => task.completionData?.completed) && (
@@ -61,7 +67,13 @@ export default function HomeTab({
       {data
         .filter((task) => task.completionData?.completed ?? false)
         .map((task) => {
-          return <TaskCard key={`task-card-${task.id}`} {...task} />;
+          return (
+            <TaskCard
+              key={`task-card-${task.id}`}
+              data={task}
+              teamId={userTeamId}
+            />
+          );
         })}
     </div>
   );

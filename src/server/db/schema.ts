@@ -134,6 +134,8 @@ export const task_proof = createTable("task_proof", {
     .references(() => events.id, { onDelete: "cascade" })
     .notNull(),
   url: varchar("url", { length: 256 }).notNull(),
+  uploadedBy: varchar("user_id", { length: 256 }).notNull(),
+  isImage: boolean("is_image").notNull(),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
