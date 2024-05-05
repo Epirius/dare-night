@@ -1,4 +1,3 @@
-import { Copy } from "lucide-react";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
@@ -12,8 +11,29 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
-import { deleteEvent, getEventData, isMember } from "~/server/queries";
+import {
+  createTeam,
+  deleteEvent,
+  getEventData,
+  getTasks,
+  getTeamsWithMembers,
+  getUserTeamId,
+  isMember,
+} from "~/server/queries";
 import { InviteOthers } from "./_components/inviteOthers";
+import { Trash2 } from "lucide-react";
+import { CreateTask } from "./_components/createTask";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { TeamCard } from "./_components/teamCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { type User, clerkClient } from "@clerk/nextjs/server";
+import HomeTab from "./_components/homeTab";
 
 export default async function EventPage({
   params,
@@ -27,18 +47,39 @@ export default async function EventPage({
   }
 
   const { event, member_count, is_admin } = await getEventData(id);
+  const userTeamId = await getUserTeamId(event.id);
+  const taskData = await getTasks(event.id, userTeamId ?? undefined);
   return (
     <main>
       <div>
-        <h1>Event: {event.name}</h1>
-        <p>member(s): {member_count}</p>
-        {is_admin && (
+        <header className="mb-4 flex flex-wrap justify-between border-b-2 border-accent pb-2">
+          <h1 className=" text-3xl font-semibold ">{event.name}</h1>
           <div>
-            <p>You are an admin</p>
-            <InviteOthers eventId={id} />
-            <DeleteEvent eventId={id} />
+            {is_admin && (
+              <div className="flex flex-wrap gap-4">
+                <CreateTask eventId={id} />
+                <InviteOthers eventId={id} />
+                <DeleteEvent eventId={id} />
+              </div>
+            )}
           </div>
-        )}
+        </header>
+        <Tabs defaultValue="home" className=" w-full">
+          <TabsList className="grid  w-full grid-cols-2">
+            <TabsTrigger value="home">Home</TabsTrigger>
+            <TabsTrigger value="teams">Teams</TabsTrigger>
+          </TabsList>
+          <TabsContent value="home">
+            <HomeTab
+              taskData={taskData}
+              userTeamId={userTeamId}
+              eventId={event.id}
+            />
+          </TabsContent>
+          <TabsContent value="teams">
+            <TeamPage eventId={id} userTeamId={userTeamId ?? undefined} />
+          </TabsContent>
+        </Tabs>
       </div>
     </main>
   );
@@ -48,7 +89,9 @@ function DeleteEvent({ eventId }: { eventId: number }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Delete Event</Button>
+        <Button variant="destructive">
+          <Trash2 />
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -74,5 +117,75 @@ function DeleteEvent({ eventId }: { eventId: number }) {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  );
+}
+
+async function TeamPage({
+  eventId,
+  userTeamId,
+}: {
+  eventId: number;
+  userTeamId?: number;
+}) {
+  const teams = await getTeamsWithMembers(eventId);
+
+  return (
+    <div className="flex flex-col gap-4 pt-2">
+      {!userTeamId && (
+        <Dialog>
+          <DialogTrigger asChild className="w-full">
+            <Button variant="outline" className="py-6 text-lg font-semibold">
+              Create team
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>Create Team</DialogHeader>
+            <form action={createTeam}>
+              <input
+                type="number"
+                name="eventId"
+                value={eventId}
+                hidden
+                aria-hidden
+              />
+              <input
+                type="text"
+                name="teamName"
+                placeholder="Team name"
+                minLength={3}
+                maxLength={50}
+              />
+              <DialogFooter>
+                <Button>Create</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+      {teams.map(async (t) => {
+        const team = await t;
+        const teamWithClerkUser = await Promise.all(
+          team.members.map(async (member) => {
+            const clerkUser: User = await clerkClient.users.getUser(
+              member.userId,
+            );
+            const userData = {
+              name: clerkUser.fullName,
+              username: clerkUser.username,
+              imageUrl: clerkUser.imageUrl,
+            };
+            return { ...member, userData };
+          }),
+        );
+
+        return (
+          <TeamCard
+            key={team.id}
+            team={{ ...team, members: teamWithClerkUser }}
+            userTeamId={userTeamId}
+          />
+        );
+      })}
+    </div>
   );
 }

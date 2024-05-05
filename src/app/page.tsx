@@ -1,4 +1,4 @@
-import {SignedIn, SignedOut} from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import {Button} from "~/components/ui/button";
 import {getEventData, getMyEvents} from "~/server/queries";
@@ -14,7 +14,20 @@ export default function HomePage() {
   return (
     <main className="">
       <SignedOut>
-        <h2 className="flex w-full justify-center">Sign in above</h2>
+        <div className="flex w-full flex-col items-center p-20">
+          <h2 className="p-5 text-6xl">Dare Night</h2>
+          <p className="pb-5 text-center">
+            Imagine a playground as vast as the city itself, where every alley
+            and avenue invites you to a challenge. Connect with friends or make
+            new ones as you tackle dares that push your limits and pump your
+            adrenaline. It&apos;s a space that turns the urban landscape into a
+            game, daring you to live louder and laugh harder. Ready for your
+            next thrill? Join us—if you dare.
+          </p>
+          <SignInButton>
+            <Button>Sign In</Button>
+          </SignInButton>
+        </div>
       </SignedOut>
       <SignedIn>
         <SignedInContent/>
