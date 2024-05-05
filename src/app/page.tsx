@@ -1,9 +1,14 @@
 import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
-import { Button } from "~/components/ui/button";
-import { getMyEvents } from "~/server/queries";
+import {Button} from "~/components/ui/button";
+import {getEventData, getMyEvents} from "~/server/queries";
+import {Card, CardDescription, CardTitle} from "~/components/ui/card"
+import {CalendarPlus, CirclePlus} from 'lucide-react';
+import EventCard from "~/components/eventCard";
+import {eventStatusEnum} from "~/utils/enum"
 
 export const dynamic = "force-dynamic";
+
 
 export default function HomePage() {
   return (
@@ -25,7 +30,7 @@ export default function HomePage() {
         </div>
       </SignedOut>
       <SignedIn>
-        <SignedInContent />
+        <SignedInContent/>
       </SignedIn>
     </main>
   );
@@ -33,34 +38,38 @@ export default function HomePage() {
 
 async function SignedInContent() {
   const events = await getMyEvents();
-  if (events instanceof Error) {
+
+    if (events instanceof Error) {
     return <div>Error: {events.message}</div>;
   }
+  const eventDataPromises = events.map(event => getEventData(event.id));
+  const eventsData = await Promise.all(eventDataPromises);
 
   return (
-    <>
-      <div>Main page</div>
-      <div className="flex gap-4">
+    <Card>
+        <CardTitle className="pt-5 pl-5">Feel daring?</CardTitle>
+        <CardDescription className="pl-5">Here is an overview of all your dare-nights you are a part of</CardDescription>
+      <div className="flex gap-4 p-5">
         <Link href="/new-event">
-          <Button variant="link" size="lg" className="px-0">
-            Create event
+          <Button size="lg" className="px-2">
+            <CalendarPlus className="mr-2 h-4 w-4"/> Create Event
           </Button>
         </Link>
         <Link href="/join-event">
-          <Button variant="link" size="lg" className="px-0">
-            Join Event
+          <Button size="lg" className="px-2">
+              <CirclePlus className="mr-2 h-4 w-4"/> Join Event
           </Button>
         </Link>
       </div>
-      <ul className="flex flex-col">
-        {events.map((e) => (
-          <li key={`li-${e.id}`}>
-            <Link href={`/event/${e.id}`} key={`link-${e.id}`}>
-              {e.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </>
+        <div className="flex justify-center items-center h-full px-4">
+            <ul className="flex flex-col items-center w-full py-5">
+                {eventsData.map((e) => (
+                    <li key={`li-${e.event.id}`} className="w-full flex justify-center mb-4 last:mb-0 py-1">
+                        <EventCard link={`/event/${e.event.id}`} name={e.event.name} members={e.member_count} eventStatus={ eventStatusEnum.Active }/>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    </Card>
   );
 }
