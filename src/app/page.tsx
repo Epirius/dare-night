@@ -1,12 +1,13 @@
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import {SignedIn, SignedOut} from "@clerk/nextjs";
 import Link from "next/link";
-import { Button } from "~/components/ui/button";
-import { getMyEvents, getEventData } from "~/server/queries";
-import { Card, CardTitle, CardDescription} from "~/components/ui/card"
-export const dynamic = "force-dynamic";
-import { CirclePlus, CalendarPlus } from 'lucide-react';
+import {Button} from "~/components/ui/button";
+import {getEventData, getMyEvents} from "~/server/queries";
+import {Card, CardDescription, CardTitle} from "~/components/ui/card"
+import {CalendarPlus, CirclePlus} from 'lucide-react';
 import EventCard from "~/components/eventCard";
+import {eventStatusEnum} from "~/utils/enum"
 
+export const dynamic = "force-dynamic";
 
 
 export default function HomePage() {
@@ -34,7 +35,7 @@ async function SignedInContent() {
   return (
     <Card>
         <CardTitle className="pt-5 pl-5">Feel daring?</CardTitle>
-        <CardDescription className="pl-5">Here is an overview of all your dare-nights so far</CardDescription>
+        <CardDescription className="pl-5">Here is an overview of all your dare-nights you are a part of</CardDescription>
       <div className="flex gap-4 p-5">
         <Link href="/new-event">
           <Button size="lg" className="px-2">
@@ -51,7 +52,7 @@ async function SignedInContent() {
             <ul className="flex flex-col items-center w-full py-5">
                 {eventsData.map((e) => (
                     <li key={`li-${e.event.id}`} className="w-full flex justify-center mb-4 last:mb-0 py-1">
-                        <EventCard link={`/event/${e.event.id}`} name={e.event.name} members={e.member_count}/>
+                        <EventCard link={`/event/${e.event.id}`} name={e.event.name} members={e.member_count} eventStatus={ eventStatusEnum.Active }/>
                     </li>
                 ))}
             </ul>
