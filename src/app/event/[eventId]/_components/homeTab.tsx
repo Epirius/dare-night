@@ -10,6 +10,10 @@ type HomeTabProps = {
   eventId: number;
 };
 
+type CompletionData = NonNullable<
+  Awaited<ReturnType<typeof getTasks>>[0]["completionData"]
+>;
+
 export default function HomeTab({
   taskData,
   userTeamId,
@@ -78,14 +82,3 @@ export default function HomeTab({
     </div>
   );
 }
-
-type CompletionData = {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date | null;
-  eventId: number;
-  teamId: number;
-  taskId: number;
-  completed: boolean;
-  completedAt: Date | null;
-};
