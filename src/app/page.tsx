@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { getMyEvents, getEventData } from "~/server/queries";
 import { Card, CardTitle, CardDescription} from "~/components/ui/card"
-import { z } from "zod";
 export const dynamic = "force-dynamic";
 import { CirclePlus, CalendarPlus } from 'lucide-react';
 import EventCard from "~/components/eventCard";
