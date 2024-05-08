@@ -6,6 +6,11 @@
 - [Shadcn for components](https://ui.shadcn.com/)
 - [Clerk for auth](https://clerk.com/)
 
+# Commands
+- ```pnpm dev```
+- ```pnpm run db:studio``` https://local.drizzle.studio
+- ```pnpm run db:push``` For updating the database schema
+
 ## Learn More about T3
 
 To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
