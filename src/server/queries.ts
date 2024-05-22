@@ -552,57 +552,63 @@ export async function getTasks(eventId: number, userTeamId?: number) {
   return data;
 }
 
-export async function toggleCompleteTask(formData: FormData) {
+export async function toggleCompleteTask(
+    formData: FormData
+) {
   const userId = auth().userId;
   if (!userId) {
     redirect("/login");
   }
 
   const { eventId, taskId } = z
-    .object({
-      eventId: z.coerce.number(),
-      taskId: z.coerce.number(),
-    })
-    .parse({
-      eventId: formData.get("eventId"),
-      taskId: formData.get("taskId"),
-    });
+      .object({
+        eventId: z.coerce.number(),
+        taskId: z.coerce.number(),
+      })
+      .parse({
+        eventId: formData.get("eventId"),
+        taskId: formData.get("taskId"),
+      });
 
   const user = await db.query.event_members.findFirst({
     where: and(
-      eq(event_members.userId, userId),
-      eq(event_members.eventId, eventId),
+        eq(event_members.userId, userId),
+        eq(event_members.eventId, eventId),
     ),
   });
   if (!user) {
-    throw new Error("User not found");
+    // throw new Error("User not found");
+    return {error: "User not in a team"}
+
   }
 
   const teamId = user.teamId;
   if (!teamId) {
-    throw new Error("User not in a team");
+    return {error: "User not in a team"}
+    // throw new Error("User not in a team");
   }
 
   const completionData = await db.query.task_completion_status.findFirst({
     where: and(
-      eq(task_completion_status.taskId, taskId),
-      eq(task_completion_status.teamId, teamId),
+        eq(task_completion_status.taskId, taskId),
+        eq(task_completion_status.teamId, teamId),
     ),
   });
   if (!completionData) {
-    throw new Error("Task completion status not found");
+    // throw new Error("Task completion status not found");
+    return {error: "User not in a team"}
   }
 
   const newStatus = await db
-    .update(task_completion_status)
-    .set({
-      completed: !completionData.completed,
-      completedAt: new Date(),
-    })
-    .where(eq(task_completion_status.id, completionData.id))
-    .returning();
+      .update(task_completion_status)
+      .set({
+        completed: !completionData.completed,
+        completedAt: new Date(),
+      })
+      .where(eq(task_completion_status.id, completionData.id))
+      .returning().then((res) => res[0]);
 
-  await pusherServer.trigger(`task-${eventId}`, "task-updated", newStatus[0]);
+  await pusherServer.trigger(`task-${eventId}`, "task-updated", newStatus);
   revalidatePath(`/event/${eventId}`);
   return newStatus;
 }

@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8db2e1da-67c4-4e97-ae2e-640f14efa2a9" name="Changes" comment="" />
+    <list default="true" id="8db2e1da-67c4-4e97-ae2e-640f14efa2a9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/event/[eventId]/_components/taskCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/event/[eventId]/_components/taskCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/eventCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/eventCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/queries.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,7 +32,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;logged__in__main__page&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/tobias/Desktop/Hobby/dare-night&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -54,6 +62,10 @@
       <workItem from="1714038951976" duration="10755000" />
       <workItem from="1714051770407" duration="2207000" />
       <workItem from="1714901538350" duration="3540000" />
+      <workItem from="1715110411752" duration="485000" />
+      <workItem from="1716368087688" duration="7095000" />
+      <workItem from="1716375268328" duration="484000" />
+      <workItem from="1716380581297" duration="2481000" />
     </task>
     <servers />
   </component>
