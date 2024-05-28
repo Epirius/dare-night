@@ -89,8 +89,8 @@ function DeleteEvent({ eventId }: { eventId: number }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">
-          <Trash2 />
+        <Button variant="destructive" className="px-2">
+          <Trash2 className="mr-2 h-4 w-4" /> Delete Event
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

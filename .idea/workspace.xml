@@ -8,10 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/event/[eventId]/_components/taskCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/event/[eventId]/_components/taskCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/event/[eventId]/_components/createTask.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/event/[eventId]/_components/createTask.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/event/[eventId]/_components/inviteOthers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/event/[eventId]/_components/inviteOthers.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/event/[eventId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/event/[eventId]/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/eventCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/eventCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/queries.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,24 +29,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/tobias/Desktop/Hobby/dare-night&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/home/tobias/Desktop/Hobby/dare-night/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/powersun/Hobby/dare-night",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "pnpm",
+    "ts.external.directory.path": "/home/powersun/Hobby/dare-night/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-1d06a55b98c1-2e7d6887c066-JavaScript-WS-241.15989.47" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-WS-241.17011.90" />
       </set>
     </attachedChunks>
   </component>
@@ -66,6 +66,11 @@
       <workItem from="1716368087688" duration="7095000" />
       <workItem from="1716375268328" duration="484000" />
       <workItem from="1716380581297" duration="2481000" />
+      <workItem from="1716892532805" duration="284000" />
+      <workItem from="1716893101693" duration="399000" />
+      <workItem from="1716893511176" duration="134000" />
+      <workItem from="1716893653875" duration="353000" />
+      <workItem from="1716894086352" duration="1415000" />
     </task>
     <servers />
   </component>

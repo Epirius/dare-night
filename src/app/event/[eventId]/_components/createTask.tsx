@@ -1,5 +1,5 @@
 "use client";
-import { DiamondPlus } from "lucide-react";
+import { SquarePlus } from "lucide-react";
 import { useFormState } from "react-dom";
 import { SubmitButton } from "~/app/_components/submitButton";
 import { Button } from "~/components/ui/button";
@@ -23,8 +23,8 @@ export function CreateTask({ eventId }: { eventId: number }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">
-          <DiamondPlus />
+        <Button variant="default" className="px-2">
+          <SquarePlus className="mr-2 h-4 w-4"/> Add Dare
         </Button>
       </DialogTrigger>
       <DialogContent>

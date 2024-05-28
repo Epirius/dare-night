@@ -39,8 +39,8 @@ export function InviteOthers({ eventId }: { eventId: number }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary" onClick={generateCode}>
-          <UserPlus />
+        <Button variant="secondary" onClick={generateCode} className="px-2">
+          <UserPlus className="mr-2 h-4 w-4"/> Invite Users
         </Button>
       </DialogTrigger>
       <DialogContent>

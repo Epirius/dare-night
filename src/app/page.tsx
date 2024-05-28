@@ -26,7 +26,7 @@ export default function HomePage() {
           </p>
           <SignInButton>
             <Button>Sign In</Button>
-          </SignInButton>
+          </SignInButton>DiamondPlus
         </div>
       </SignedOut>
       <SignedIn>
