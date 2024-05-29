@@ -57,6 +57,11 @@ export function CreateTask({ eventId }: { eventId: number }) {
             id="eventId"
             value={eventId}
           />
+          <Input
+            name="points"
+            type="number"
+            id="points"
+          />
           <DialogFooter>
             <DialogClose>Cancle</DialogClose>
             <SubmitButton>Create</SubmitButton>

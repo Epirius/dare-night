@@ -17,6 +17,7 @@ import { unknown, z } from "zod";
 import { revalidatePath } from "next/cache";
 import "server-only";
 import { pusherServer } from "~/lib/pusherServer";
+import {integer} from "drizzle-orm/pg-core";
 
 export async function createEvent(
   currentState: { error: string },
@@ -237,19 +238,24 @@ export async function createTask(
         .string()
         .max(255, "Max description length is 255 characters")
         .optional(),
+      points:z
+          .string()
+          .min(1)
+          .max(255),
       eventId: z.coerce.number(),
     })
     .safeParse({
       name: formData.get("name"),
       description: formData.get("description"),
       eventId: formData.get("eventId"),
+      points: formData.get("points"),
     });
 
   if (!data.success) {
     console.log(data.error.errors.map((e) => e.message).join(", "));
     return { error: data.error.errors.map((e) => e.message).join(", ") };
   }
-  const { name, description, eventId } = data.data;
+  const { name, description, eventId, points } = data.data;
   const admin = await isAdmin(eventId, user.userId);
   if (typeof admin === "object") {
     return admin;
@@ -261,6 +267,7 @@ export async function createTask(
   if (!!existingEvent) {
     return { error: "Task with that name already exists" };
   }
+  const points2 = parseInt(points);
 
   const newTask = await db
     .insert(tasks)
@@ -268,6 +275,7 @@ export async function createTask(
       name,
       description,
       eventId,
+      points: points2,
     })
     .returning();
 

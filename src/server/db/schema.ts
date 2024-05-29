@@ -108,6 +108,7 @@ export const tasks = createTable(
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 256 }).notNull(),
     description: varchar("description", { length: 256 }),
+    points: integer("points").notNull(),
     eventId: integer("event_id")
       .references(() => events.id, { onDelete: "cascade" })
       .notNull(),
