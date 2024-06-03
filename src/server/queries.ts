@@ -10,6 +10,7 @@ import {
   tasks,
   teams,
   task_proof,
+  categories,
 } from "./db/schema";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
@@ -227,6 +228,54 @@ export async function createOtpCode(eventId: number, oneTimeUse: boolean) {
       continue;
     }
   }
+}
+
+export async function createCategory(
+  currentState: { error: string },
+  formData: FormData,
+) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const data = z
+    .object({
+      name: z
+        .string()
+        .min(3, "Category name must be at least 3 characters")
+        .max(50, "Max category name length is 50 characters"),
+      eventId: z.coerce.number(),
+    })
+    .safeParse({
+      name: formData.get("name"),
+      eventId: formData.get("eventId"),
+    });
+  if (!data.success) {
+    return { error: data.error.errors.map((e) => e.message).join(", ") };
+  }
+
+  const admin = await isAdmin(data.data.eventId, user.userId);
+  if (typeof admin === "object") {
+    return admin;
+  }
+
+  const existingCategory = await db.query.categories.findFirst({
+    where: and(
+      eq(categories.name, data.data.name),
+      eq(categories.eventId, data.data.eventId),
+    ),
+  });
+  if (!!existingCategory) {
+    return { error: "Category with that name already exists" };
+  }
+
+  await db.insert(categories).values({
+    name: data.data.name,
+    eventId: data.data.eventId,
+  });
+  revalidatePath(`/event/${data.data.eventId}`);
+  redirect(`/event/${data.data.eventId}`);
 }
 
 export async function createTask(

@@ -36,6 +36,7 @@ import { type User, clerkClient } from "@clerk/nextjs/server";
 import HomeTab from "./_components/homeTab";
 import Leaderboard from "./_components/leaderboardTab";
 import CountdownTimer from "~/components/countdownTimer";
+import { CreateCategory } from "./_components/createCategory";
 
 export default async function EventPage({
   params,
@@ -60,6 +61,7 @@ export default async function EventPage({
           <div>
             {is_admin && (
               <div className="flex flex-wrap gap-4">
+                <CreateCategory eventId={id} />
                 <CreateTask eventId={id} />
                 <InviteOthers eventId={id} />
                 <DeleteEvent eventId={id} />
