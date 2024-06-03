@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8db2e1da-67c4-4e97-ae2e-640f14efa2a9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/event/[eventId]/_components/taskCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/event/[eventId]/_components/taskCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/carousel.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/queries.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/queries.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,6 +80,7 @@
       <workItem from="1716894086352" duration="1415000" />
       <workItem from="1716968580867" duration="1218000" />
       <workItem from="1717355580739" duration="2718000" />
+      <workItem from="1717404991328" duration="364000" />
     </task>
     <servers />
   </component>

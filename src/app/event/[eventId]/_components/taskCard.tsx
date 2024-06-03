@@ -50,7 +50,7 @@ const getProof = async({data, teamId}: Props) => {
   }
 }
 
-export async function TaskCard({ data, teamId }: Props) {
+export function TaskCard({ data, teamId }: Props) {
 
   return (
     <Dialog>
