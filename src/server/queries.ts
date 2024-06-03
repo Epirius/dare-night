@@ -583,6 +583,19 @@ export async function toggleCompleteTask(formData: FormData) {
       taskId: formData.get("taskId"),
     });
 
+  const finishedAt = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+    columns: { finishedAt: true },
+  });
+
+  if (!finishedAt) {
+    return { error: "Event not found" };
+  }
+
+  if (new Date() > finishedAt.finishedAt) {
+    return { error: "Event has finished" };
+  }
+
   const user = await db.query.event_members.findFirst({
     where: and(
       eq(event_members.userId, userId),
