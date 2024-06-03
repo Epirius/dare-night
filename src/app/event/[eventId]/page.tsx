@@ -34,6 +34,7 @@ import {
 } from "~/components/ui/dialog";
 import { type User, clerkClient } from "@clerk/nextjs/server";
 import HomeTab from "./_components/homeTab";
+import Leaderboard from "./_components/leaderboardTab";
 
 export default async function EventPage({
   params,
@@ -65,9 +66,10 @@ export default async function EventPage({
           </div>
         </header>
         <Tabs defaultValue="home" className=" w-full">
-          <TabsList className="grid  w-full grid-cols-2">
+          <TabsList className="grid  w-full grid-cols-3">
             <TabsTrigger value="home">Home</TabsTrigger>
             <TabsTrigger value="teams">Teams</TabsTrigger>
+            <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </TabsList>
           <TabsContent value="home">
             <HomeTab
@@ -78,6 +80,9 @@ export default async function EventPage({
           </TabsContent>
           <TabsContent value="teams">
             <TeamPage eventId={id} userTeamId={userTeamId ?? undefined} />
+          </TabsContent>
+          <TabsContent value="leaderboard">
+            <Leaderboard />
           </TabsContent>
         </Tabs>
       </div>
