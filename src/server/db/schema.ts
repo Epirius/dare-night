@@ -2,6 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { relations, sql } from "drizzle-orm";
+import { int } from "drizzle-orm/mysql-core";
 import {
   index,
   pgEnum,
@@ -31,6 +32,7 @@ export const events = createTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt"),
+    finishedAt: timestamp("finished_at").notNull(),
   },
   (example) => ({
     nameIndex: index("events_idx").on(example.name),
@@ -108,6 +110,9 @@ export const tasks = createTable(
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 256 }).notNull(),
     description: varchar("description", { length: 256 }),
+    category: integer("category_id")
+      .references(() => categories.id, { onDelete: "set default" })
+      .default(sql`NULL`),
     points: integer("points").notNull(),
     eventId: integer("event_id")
       .references(() => events.id, { onDelete: "cascade" })
@@ -120,6 +125,21 @@ export const tasks = createTable(
   (example) => ({
     nameIndex: index("tasks_idx").on(example.name),
     unique1: unique("task_name").on(example.name, example.eventId),
+  }),
+);
+
+export const categories = createTable(
+  "category",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt"),
+  },
+  (example) => ({
+    nameIndex: index("categories_idx").on(example.name),
   }),
 );
 
