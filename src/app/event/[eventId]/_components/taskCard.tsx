@@ -59,7 +59,7 @@ export function TaskCard({ data, teamId }: Props) {
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between">
               <h2 className="text-wrap text-2xl font-bold text-gray-900 dark:text-gray-200">
-                {data.name}horerer
+                {data.name}
               </h2>
               <div>
                 <form action={toggleCompleteTask}>
