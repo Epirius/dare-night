@@ -8,7 +8,7 @@ import {
   events,
   task_completion_status,
   tasks,
-  teams,
+  teams, task_proof,
 } from "./db/schema";
 import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
@@ -633,4 +633,26 @@ export async function getTaskCompletionStatus(
     ),
   });
   return completionData;
+}
+
+
+export async function getTaskProof(eventId: number, taskId: number, userTeamId: number) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const proofList = await db.query.task_proof.findMany({
+    where: and(
+        eq(task_proof.eventId, eventId),
+        eq(task_proof.taskId, taskId),
+        eq(task_proof.teamId, userTeamId),
+        )
+  });
+
+  if (!proofList) {
+    return {error: "Proof not found"};
+  }
+
+  return proofList;
 }

@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardHeader } from "~/components/ui/card";
-import { toggleCompleteTask } from "~/server/queries";
+import {getTaskProof, toggleCompleteTask} from "~/server/queries";
 import { Button } from "~/components/ui/button";
 import { Circle, CircleCheck } from "lucide-react";
 import { UploadButton } from "~/utils/uploadthing";
@@ -15,6 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import TriggerBlocker from "./triggerBlocker";
 import React from "react";
+import {task_proof} from "~/server/db/schema";
 
 export type TaskCardProps = {
   id: number;
@@ -40,7 +41,17 @@ type Props = {
   teamId: number | null;
 };
 
-export function TaskCard({ data, teamId }: Props) {
+const getProof = async({data, teamId}: Props) => {
+  if (data.completionData?.completed && teamId){
+    const proofList = getTaskProof(data.eventId,data.id, teamId);
+    return proofList;
+  } else {
+    return null;
+  }
+}
+
+export async function TaskCard({ data, teamId }: Props) {
+
   return (
     <Dialog>
       <Card>
@@ -48,7 +59,7 @@ export function TaskCard({ data, teamId }: Props) {
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between">
               <h2 className="text-wrap text-2xl font-bold text-gray-900 dark:text-gray-200">
-                {data.name}
+                {data.name}horerer
               </h2>
               <div>
                 <form action={toggleCompleteTask}>
@@ -89,7 +100,7 @@ export function TaskCard({ data, teamId }: Props) {
             </div>
           </CardHeader>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent onClick={() => getProof}>
           <DialogHeader>
             <DialogTitle>
               <h2>{data.name}</h2>
