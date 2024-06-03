@@ -62,7 +62,7 @@ const EventCard = (props: EventCardProps) => {
               <Calendar />
             </CardDescription>
             <CardDescription className="pl-2 text-xl">
-              {props.finishedAt.toLocaleDateString("en-GB", {
+              {props.finishedAt.toLocaleDateString("no-NO", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "2-digit",

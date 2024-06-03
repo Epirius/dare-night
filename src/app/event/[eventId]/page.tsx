@@ -35,6 +35,7 @@ import {
 import { type User, clerkClient } from "@clerk/nextjs/server";
 import HomeTab from "./_components/homeTab";
 import Leaderboard from "./_components/leaderboardTab";
+import CountdownTimer from "~/components/countdownTimer";
 
 export default async function EventPage({
   params,
@@ -53,8 +54,9 @@ export default async function EventPage({
   return (
     <main>
       <div>
-        <header className="mb-4 flex flex-wrap justify-between border-b-2 border-accent pb-2">
+        <header className="mb-4 flex flex-wrap items-center justify-between border-b-2 border-accent pb-2">
           <h1 className=" text-3xl font-semibold ">{event.name}</h1>
+          <CountdownTimer date={event.finishedAt} />
           <div>
             {is_admin && (
               <div className="flex flex-wrap gap-4">
