@@ -248,12 +248,14 @@ export async function createTask(
         .string()
         .max(255, "Max description length is 255 characters")
         .optional(),
+      category: z.string().optional(),
       points: z.string().min(1).max(255),
       eventId: z.coerce.number(),
     })
     .safeParse({
       name: formData.get("name"),
       description: formData.get("description"),
+      category: formData.get("category"),
       eventId: formData.get("eventId"),
       points: formData.get("points"),
     });

@@ -14,17 +14,27 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import {
+  Select,
+  SelectGroup,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+} from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import { createTask } from "~/server/queries";
 
 export function CreateTask({ eventId }: { eventId: number }) {
   const [formState, formAction] = useFormState(createTask, { error: "" });
 
+  const categories: string[] = [];
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="default" className="px-2">
-          <SquarePlus className="mr-2 h-4 w-4"/> Add Dare
+          <SquarePlus className="mr-2 h-4 w-4" /> Add Dare
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -57,11 +67,34 @@ export function CreateTask({ eventId }: { eventId: number }) {
             id="eventId"
             value={eventId}
           />
-          <Input
-            name="points"
-            type="number"
-            id="points"
-          />
+          <Label htmlFor="points" className="text-md pl-1">
+            Points:
+          </Label>
+          <Input name="points" type="number" id="points" />
+          <Label htmlFor="category" className="text-md pl-1">
+            Category:
+          </Label>
+          {categories.length === 0 && (
+            <p className="text-sm text-gray-500">
+              No categories available. Please create a category first.
+            </p>
+          )}
+          {categories.length > 0 && (
+            <Select name="category">
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
           <DialogFooter>
             <DialogClose>Cancle</DialogClose>
             <SubmitButton>Create</SubmitButton>

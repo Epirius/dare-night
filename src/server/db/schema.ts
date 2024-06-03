@@ -133,6 +133,9 @@ export const categories = createTable(
   {
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 256 }).notNull(),
+    eventId: integer("event_id")
+      .references(() => events.id, { onDelete: "cascade" })
+      .notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -248,6 +251,18 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
     references: [events.id],
   }),
   task_proof: many(task_proof),
+  categories: one(categories, {
+    fields: [tasks.category],
+    references: [categories.id],
+  }),
+}));
+
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
+  events: one(events, {
+    fields: [categories.eventId],
+    references: [events.id],
+  }),
+  tasks: many(tasks),
 }));
 
 export const taskCompletionStatusRelations = relations(
