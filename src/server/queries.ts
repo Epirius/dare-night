@@ -8,16 +8,16 @@ import {
   events,
   task_completion_status,
   tasks,
-  teams, task_proof,
+  teams,
+  task_proof,
 } from "./db/schema";
-import { eventCreationSchema } from "~/schema/eventSchema";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { unknown, z } from "zod";
 import { revalidatePath } from "next/cache";
 import "server-only";
 import { pusherServer } from "~/lib/pusherServer";
-import {integer} from "drizzle-orm/pg-core";
+import { integer } from "drizzle-orm/pg-core";
 
 export async function createEvent(
   currentState: { error: string },
@@ -29,8 +29,18 @@ export async function createEvent(
     redirect("/login");
   }
 
+  const eventCreationSchema = z.object({
+    name: z
+      .string()
+      .min(3, "Name must have at least 3 characters")
+      .max(255, "Name must have under 255 characters")
+      .trim(),
+    finishedAt: z.string().transform((arg) => new Date(arg)),
+  });
+
   const data = eventCreationSchema.safeParse({
     name: formData.get("name"),
+    finishedAt: formData.get("finishedAt"),
   });
 
   if (!data.success) {
@@ -40,7 +50,7 @@ export async function createEvent(
   await db.transaction(async (db) => {
     const newEvent = await db
       .insert(events)
-      .values({ name: data.data.name })
+      .values({ name: data.data.name, finishedAt: data.data.finishedAt })
       .returning();
     if (!newEvent?.[0]?.id) {
       db.rollback();
@@ -238,10 +248,7 @@ export async function createTask(
         .string()
         .max(255, "Max description length is 255 characters")
         .optional(),
-      points:z
-          .string()
-          .min(1)
-          .max(255),
+      points: z.string().min(1).max(255),
       eventId: z.coerce.number(),
     })
     .safeParse({
@@ -560,61 +567,59 @@ export async function getTasks(eventId: number, userTeamId?: number) {
   return data;
 }
 
-export async function toggleCompleteTask(
-    formData: FormData
-) {
+export async function toggleCompleteTask(formData: FormData) {
   const userId = auth().userId;
   if (!userId) {
     redirect("/login");
   }
 
   const { eventId, taskId } = z
-      .object({
-        eventId: z.coerce.number(),
-        taskId: z.coerce.number(),
-      })
-      .parse({
-        eventId: formData.get("eventId"),
-        taskId: formData.get("taskId"),
-      });
+    .object({
+      eventId: z.coerce.number(),
+      taskId: z.coerce.number(),
+    })
+    .parse({
+      eventId: formData.get("eventId"),
+      taskId: formData.get("taskId"),
+    });
 
   const user = await db.query.event_members.findFirst({
     where: and(
-        eq(event_members.userId, userId),
-        eq(event_members.eventId, eventId),
+      eq(event_members.userId, userId),
+      eq(event_members.eventId, eventId),
     ),
   });
   if (!user) {
     // throw new Error("User not found");
-    return {error: "User not in a team"}
-
+    return { error: "User not in a team" };
   }
 
   const teamId = user.teamId;
   if (!teamId) {
-    return {error: "User not in a team"}
+    return { error: "User not in a team" };
     // throw new Error("User not in a team");
   }
 
   const completionData = await db.query.task_completion_status.findFirst({
     where: and(
-        eq(task_completion_status.taskId, taskId),
-        eq(task_completion_status.teamId, teamId),
+      eq(task_completion_status.taskId, taskId),
+      eq(task_completion_status.teamId, teamId),
     ),
   });
   if (!completionData) {
     // throw new Error("Task completion status not found");
-    return {error: "User not in a team"}
+    return { error: "User not in a team" };
   }
 
   const newStatus = await db
-      .update(task_completion_status)
-      .set({
-        completed: !completionData.completed,
-        completedAt: new Date(),
-      })
-      .where(eq(task_completion_status.id, completionData.id))
-      .returning().then((res) => res[0]);
+    .update(task_completion_status)
+    .set({
+      completed: !completionData.completed,
+      completedAt: new Date(),
+    })
+    .where(eq(task_completion_status.id, completionData.id))
+    .returning()
+    .then((res) => res[0]);
 
   await pusherServer.trigger(`task-${eventId}`, "task-updated", newStatus);
   revalidatePath(`/event/${eventId}`);
@@ -635,8 +640,11 @@ export async function getTaskCompletionStatus(
   return completionData;
 }
 
-
-export async function getTaskProof(eventId: number, taskId: number, userTeamId: number) {
+export async function getTaskProof(
+  eventId: number,
+  taskId: number,
+  userTeamId: number,
+) {
   const user = auth();
   if (!user.userId) {
     redirect("/login");
@@ -644,14 +652,14 @@ export async function getTaskProof(eventId: number, taskId: number, userTeamId: 
 
   const proofList = await db.query.task_proof.findMany({
     where: and(
-        eq(task_proof.eventId, eventId),
-        eq(task_proof.taskId, taskId),
-        eq(task_proof.teamId, userTeamId),
-        )
+      eq(task_proof.eventId, eventId),
+      eq(task_proof.taskId, taskId),
+      eq(task_proof.teamId, userTeamId),
+    ),
   });
 
   if (!proofList) {
-    return {error: "Proof not found"};
+    return { error: "Proof not found" };
   }
 
   return proofList;

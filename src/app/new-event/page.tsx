@@ -37,6 +37,10 @@ export default function Page() {
                 Name *
               </Label>
               <Input type="text" id="name" name="name" />
+              <Label className="text-lg" htmlFor="finishedAt">
+                Finished at*
+              </Label>
+              <Input type="datetime-local" id="finishedAt" name="finishedAt" />
             </div>
             <SubmitButton>Create</SubmitButton>
             {formState?.error && (
