@@ -45,8 +45,8 @@ export function TeamCard({
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{team.name}</h2>
-            <div className="flex flex-wrap-reverse items-center gap-2">
+            <div className="flex w-full items-center justify-between gap-2 pl-2">
+              <h2 className="text-lg font-semibold">{team.name}</h2>
               {!userTeamId && (
                 <form action={joinTeam}>
                   <input
@@ -91,13 +91,14 @@ export function TeamCard({
                   </Button>
                 </form>
               )}
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  {!isOpen && <ChevronDown />}
-                  {isOpen && <ChevronUp />}
-                </Button>
-              </CollapsibleTrigger>
             </div>
+
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm">
+                {!isOpen && <ChevronDown />}
+                {isOpen && <ChevronUp />}
+              </Button>
+            </CollapsibleTrigger>
           </div>
         </CardHeader>
         <CollapsibleContent>
