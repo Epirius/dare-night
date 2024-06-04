@@ -48,7 +48,7 @@ export default function HomeTab({
 
   return (
     <div>
-      <h2>Home</h2>
+      <h2>Tasks</h2>
       {data.length > 0 && (
         <h3 className="pb-4 pt-6 text-2xl font-semibold">Tasks:</h3>
       )}

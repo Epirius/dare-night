@@ -73,7 +73,7 @@ export default async function EventPage({
         </header>
         <Tabs defaultValue="home" className=" w-full">
           <TabsList className="grid  w-full grid-cols-3">
-            <TabsTrigger value="home">Home</TabsTrigger>
+            <TabsTrigger value="home">Tasks</TabsTrigger>
             <TabsTrigger value="teams">Teams</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </TabsList>
