@@ -641,6 +641,29 @@ export async function getTasks(eventId: number, userTeamId?: number) {
   return data;
 }
 
+export async function getLeaderboard(eventId: number) {
+  return await db.query.task_completion_status.findMany({
+    where: and(
+      eq(task_completion_status.eventId, eventId),
+      eq(task_completion_status.completed, true),
+    ),
+    with: {
+      teams: {
+        columns: {
+          name: true,
+          id: true,
+        },
+      },
+      tasks: {
+        columns: {
+          points: true,
+          category: true,
+        },
+      },
+    },
+  });
+}
+
 export async function toggleCompleteTask(formData: FormData) {
   const userId = auth().userId;
   if (!userId) {

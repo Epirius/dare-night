@@ -89,7 +89,7 @@ export default async function EventPage({
             <TeamPage eventId={id} userTeamId={userTeamId ?? undefined} />
           </TabsContent>
           <TabsContent value="leaderboard">
-            <Leaderboard />
+            <Leaderboard eventId={id} />
           </TabsContent>
         </Tabs>
       </div>
