@@ -61,10 +61,10 @@ export default function HomeTab({
   return (
     <div>
       {data.length > 0 && (
-        <h3 className=" pt-2 text-2xl font-semibold">Tasks:</h3>
+        <h3 className=" pb-6 pt-2 text-2xl font-semibold">Tasks:</h3>
       )}
       {userTeamId === null && (
-        <p className="mx-8 my-6 rounded-lg bg-destructive px-4 py-2 text-lg text-white">
+        <p className="mx-8 mb-6 rounded-lg bg-destructive px-4 py-2 text-lg text-white">
           You do not appear to be part of any team. You will not be able to
           complete any tasks unless you join a team. Please go to the teams tab
           and join or create a team.
