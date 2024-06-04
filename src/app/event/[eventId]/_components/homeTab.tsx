@@ -60,10 +60,17 @@ export default function HomeTab({
 
   return (
     <div>
-      <h2>Tasks</h2>
       {data.length > 0 && (
-        <h3 className="pb-4 pt-6 text-2xl font-semibold">Tasks:</h3>
+        <h3 className=" pt-2 text-2xl font-semibold">Tasks:</h3>
       )}
+      {userTeamId === null && (
+        <p className="mx-8 my-6 rounded-lg bg-destructive px-4 py-2 text-lg text-white">
+          You do not appear to be part of any team. You will not be able to
+          complete any tasks unless you join a team. Please go to the teams tab
+          and join or create a team.
+        </p>
+      )}
+
       {data.length === 0 && <p>No tasks yet</p>}
       {categories.map((category) => {
         return (

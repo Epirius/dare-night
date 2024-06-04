@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardHeader } from "~/components/ui/card";
-import {getTaskProof, toggleCompleteTask} from "~/server/queries";
+import { getTaskProof, toggleCompleteTask } from "~/server/queries";
 import { Button } from "~/components/ui/button";
 import { Circle, CircleCheck } from "lucide-react";
 import { UploadButton } from "~/utils/uploadthing";
@@ -15,7 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import TriggerBlocker from "./triggerBlocker";
 import React from "react";
-import {task_proof} from "~/server/db/schema";
+import { task_proof } from "~/server/db/schema";
 
 export type TaskCardProps = {
   id: number;
@@ -41,17 +41,16 @@ type Props = {
   teamId: number | null;
 };
 
-const getProof = async({data, teamId}: Props) => {
-  if (data.completionData?.completed && teamId){
-    const proofList = getTaskProof(data.eventId,data.id, teamId);
+const getProof = async ({ data, teamId }: Props) => {
+  if (data.completionData?.completed && teamId) {
+    const proofList = getTaskProof(data.eventId, data.id, teamId);
     return proofList;
   } else {
     return null;
   }
-}
+};
 
 export function TaskCard({ data, teamId }: Props) {
-
   return (
     <Dialog>
       <Card>
@@ -79,7 +78,7 @@ export function TaskCard({ data, teamId }: Props) {
                     aria-hidden
                     readOnly
                   />
-                  {!data.completionData?.completed && (
+                  {!data.completionData?.completed && !!teamId && (
                     <TriggerBlocker>
                       <Button size="icon" variant="ghost" className="group">
                         <Circle className="group-hover:hidden" />
@@ -87,7 +86,7 @@ export function TaskCard({ data, teamId }: Props) {
                       </Button>
                     </TriggerBlocker>
                   )}
-                  {data.completionData?.completed && (
+                  {data.completionData?.completed && !!teamId && (
                     <TriggerBlocker>
                       <Button size="icon" variant="ghost" className="group">
                         <Circle className="hidden text-red-500 group-hover:block" />

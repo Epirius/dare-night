@@ -61,8 +61,9 @@ export function TeamCard({
                     name="eventId"
                     value={team.eventId}
                   />
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="flex gap-2">
                     <DiamondPlus />
+                    <p className="text-base font-semibold">Join team</p>
                   </Button>
                 </form>
               )}
@@ -80,8 +81,13 @@ export function TeamCard({
                     name="eventId"
                     value={team.eventId}
                   />
-                  <Button variant="destructive" size="sm">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex gap-2"
+                  >
                     <Trash2 />
+                    <p className="text-base font-semibold">Leave team</p>
                   </Button>
                 </form>
               )}
