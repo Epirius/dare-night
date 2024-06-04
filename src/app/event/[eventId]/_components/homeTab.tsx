@@ -103,7 +103,7 @@ function CategoryAccordion({
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value={category?.name ?? "no-category"}>
           <AccordionTrigger>
-            <h3>{category?.name ?? "No category"}</h3>
+            <h3>{category?.name ?? "Other tasks"}</h3>
           </AccordionTrigger>
           <AccordionContent>
             {data
