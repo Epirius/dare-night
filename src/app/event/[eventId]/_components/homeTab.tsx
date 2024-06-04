@@ -102,13 +102,18 @@ function CategoryAccordion({
     <div>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value={category?.name ?? "no-category"}>
-          <AccordionTrigger>
-            <h3>{category?.name ?? "Other tasks"}</h3>
+          <AccordionTrigger className="bg-primary-foreground px-4">
+            <div className="flex w-full justify-between pr-4">
+              <h3>{category?.name ?? "Other tasks"}</h3>
+              <p className="hover:no-underline">
+                {data.filter((task) => task.completionData?.completed).length} /{" "}
+                {data.length}
+              </p>
+            </div>
           </AccordionTrigger>
-          <AccordionContent>
-            {data
-              .filter((task) => !task.completionData?.completed ?? true)
-              .map((task) => {
+          <AccordionContent className="bg-primary-foreground px-2">
+            <div className="flex flex-col gap-2">
+              {data.map((task) => {
                 return (
                   <TaskCard
                     key={`task-card-${task.id}`}
@@ -117,23 +122,7 @@ function CategoryAccordion({
                   />
                 );
               })}
-            {data[0]?.completionData &&
-              data.find((task) => task.completionData?.completed) && (
-                <h3 className="pb-4 pt-6 text-2xl font-semibold">
-                  completed tasks:
-                </h3>
-              )}
-            {data
-              .filter((task) => task.completionData?.completed ?? false)
-              .map((task) => {
-                return (
-                  <TaskCard
-                    key={`task-card-${task.id}`}
-                    data={task}
-                    teamId={userTeamId}
-                  />
-                );
-              })}
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
