@@ -23,12 +23,15 @@ import {
   SelectTrigger,
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
-import { createTask } from "~/server/queries";
+import { createTask, type getCategory } from "~/server/queries";
 
-export function CreateTask({ eventId }: { eventId: number }) {
+type createTaskParams = {
+  eventId: number;
+  categories: Awaited<ReturnType<typeof getCategory>>;
+};
+
+export function CreateTask({ eventId, categories }: createTaskParams) {
   const [formState, formAction] = useFormState(createTask, { error: "" });
-
-  const categories: string[] = [];
 
   return (
     <Dialog>
@@ -87,8 +90,11 @@ export function CreateTask({ eventId }: { eventId: number }) {
               <SelectContent>
                 <SelectGroup>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                    <SelectItem
+                      key={`${category.id}-${category.name}`}
+                      value={category.name}
+                    >
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectGroup>

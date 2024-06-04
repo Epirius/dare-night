@@ -230,6 +230,16 @@ export async function createOtpCode(eventId: number, oneTimeUse: boolean) {
   }
 }
 
+export async function getCategory(
+  eventId: number,
+): Promise<{ id: number; name: string }[]> {
+  const result = await db.query.categories.findMany({
+    where: eq(categories.eventId, eventId),
+  });
+
+  return result;
+}
+
 export async function createCategory(
   currentState: { error: string },
   formData: FormData,
@@ -313,7 +323,8 @@ export async function createTask(
     console.log(data.error.errors.map((e) => e.message).join(", "));
     return { error: data.error.errors.map((e) => e.message).join(", ") };
   }
-  const { name, description, eventId, points } = data.data;
+
+  const { name, description, eventId, points, category } = data.data;
   const admin = await isAdmin(eventId, user.userId);
   if (typeof admin === "object") {
     return admin;
@@ -327,6 +338,17 @@ export async function createTask(
   }
   const points2 = parseInt(points);
 
+  let categoryId = null;
+  if (category) {
+    categoryId = await db.query.categories.findFirst({
+      where: and(
+        eq(categories.name, category),
+        eq(categories.eventId, eventId),
+      ),
+      columns: { id: true },
+    });
+  }
+
   const newTask = await db
     .insert(tasks)
     .values({
@@ -334,6 +356,7 @@ export async function createTask(
       description,
       eventId,
       points: points2,
+      category: categoryId?.id,
     })
     .returning();
 

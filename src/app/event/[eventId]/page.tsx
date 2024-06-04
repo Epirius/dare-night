@@ -14,6 +14,7 @@ import { Button } from "~/components/ui/button";
 import {
   createTeam,
   deleteEvent,
+  getCategory,
   getEventData,
   getTasks,
   getTeamsWithMembers,
@@ -52,6 +53,7 @@ export default async function EventPage({
   const { event, member_count, is_admin } = await getEventData(id);
   const userTeamId = await getUserTeamId(event.id);
   const taskData = await getTasks(event.id, userTeamId ?? undefined);
+  const eventCategories = await getCategory(id);
   return (
     <main>
       <div>
@@ -62,7 +64,7 @@ export default async function EventPage({
             {is_admin && (
               <div className="flex flex-wrap gap-4">
                 <CreateCategory eventId={id} />
-                <CreateTask eventId={id} />
+                <CreateTask eventId={id} categories={eventCategories} />
                 <InviteOthers eventId={id} />
                 <DeleteEvent eventId={id} />
               </div>
