@@ -82,6 +82,7 @@ export default async function EventPage({
               taskData={taskData}
               userTeamId={userTeamId}
               eventId={event.id}
+              categories={eventCategories}
             />
           </TabsContent>
           <TabsContent value="teams">

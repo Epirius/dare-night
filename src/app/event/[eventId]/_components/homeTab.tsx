@@ -1,5 +1,9 @@
 "use client";
-import { type getUserTeamId, type getTasks } from "~/server/queries";
+import {
+  type getUserTeamId,
+  type getTasks,
+  type getCategory,
+} from "~/server/queries";
 import { TaskCard } from "./taskCard";
 import { useEffect, useState } from "react";
 import { pusherClient } from "~/lib/pusherClient";
@@ -8,6 +12,7 @@ type HomeTabProps = {
   taskData: Awaited<ReturnType<typeof getTasks>>;
   userTeamId: Awaited<ReturnType<typeof getUserTeamId>>;
   eventId: number;
+  categories: Awaited<ReturnType<typeof getCategory>>;
 };
 
 type CompletionData = NonNullable<
