@@ -125,7 +125,8 @@ export function TaskCard({ data, teamId }: Props) {
             {proofList?.map((proof) => {
               return (
                 <div key={proof.url}>
-                  <img src={proof.url} alt={proof.url} />
+                  {proof.isImage && <img src={proof.url} alt={proof.url} />}
+                  {!proof.isImage && <video src={proof.url} controls />}
                 </div>
               );
             })}
