@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from "~/components/ui/dialog";
 import TriggerBlocker from "./triggerBlocker";
-import React from "react";
+import React, { use, useEffect, useState } from "react";
 import { task_proof } from "~/server/db/schema";
 
 export type TaskCardProps = {
@@ -41,16 +41,27 @@ type Props = {
   teamId: number | null;
 };
 
-const getProof = async ({ data, teamId }: Props) => {
-  if (data.completionData?.completed && teamId) {
-    const proofList = getTaskProof(data.eventId, data.id, teamId);
-    return proofList;
-  } else {
-    return null;
-  }
-};
-
 export function TaskCard({ data, teamId }: Props) {
+  type ExtractArray<T> = T extends (infer U)[] ? U[] : never;
+  type Proof = ExtractArray<Awaited<ReturnType<typeof getTaskProof>>>;
+
+  const [proofList, setProofList] = useState<Proof | null>(null);
+
+  const getProof = async ({ data, teamId }: Props) => {
+    if (!teamId) {
+      return;
+    }
+    const proofData = await getTaskProof(data.eventId, data.id, teamId);
+    if ("error" in proofData) {
+      return;
+    }
+    setProofList(proofData);
+  };
+
+  useEffect(() => {
+    void getProof({ data, teamId });
+  }, [data, teamId]);
+
   return (
     <Dialog>
       <Card>
@@ -99,7 +110,8 @@ export function TaskCard({ data, teamId }: Props) {
             </div>
           </CardHeader>
         </DialogTrigger>
-        <DialogContent onClick={() => getProof}>
+        <DialogContent>
+          {/* <DialogContent onClick={() => getProof}> */}
           <DialogHeader>
             <DialogTitle>
               <h2>{data.name}</h2>
@@ -108,6 +120,16 @@ export function TaskCard({ data, teamId }: Props) {
               <p>{data.description}</p>
             </DialogDescription>
           </DialogHeader>
+          {/* <Proof data={data} teamId={teamId} /> */}
+          <div>
+            {proofList?.map((proof) => {
+              return (
+                <div key={proof.url}>
+                  <img src={proof.url} alt={proof.url} />
+                </div>
+              );
+            })}
+          </div>
           <DialogFooter>
             {teamId && (
               <TriggerBlocker>
