@@ -69,7 +69,7 @@ export function TaskCard({ data, teamId }: Props) {
         <DialogTrigger className="w-full" asChild>
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between">
-              <h2 className="text-wrap text-2xl font-bold text-gray-900 dark:text-gray-200">
+              <h2 className="font-bold text-gray-900 dark:text-gray-200 md:text-2xl">
                 {data.name}
               </h2>
               <div className="flex items-center gap-2">
