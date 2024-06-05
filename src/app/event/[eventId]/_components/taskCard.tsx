@@ -68,12 +68,15 @@ export function TaskCard({ data, teamId }: Props) {
       <Card>
         <DialogTrigger className="w-full" asChild>
           <CardHeader>
-            <div className="flex flex-wrap items-center justify-between">
-              <h2 className="font-bold text-gray-900 dark:text-gray-200 md:text-2xl">
-                {data.name}
-              </h2>
-              <div className="flex items-center gap-2">
-                <p>Points: {data.points}</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="break-words font-bold text-gray-900 dark:text-gray-200 md:text-2xl">
+                  {data.name}
+                </p>
+                <p className="flex-shrink-0">Points: {data.points}</p>
+              </div>
+
+              <div className="flexitems-center gap-2">
                 <form action={toggleCompleteTask}>
                   <input
                     value={data.eventId}
