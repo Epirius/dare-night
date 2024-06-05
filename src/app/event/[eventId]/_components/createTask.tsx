@@ -106,7 +106,6 @@ export function CreateTask({ eventId, categories }: createTaskParams) {
           <DialogFooter>
             <DialogClose>Cancle</DialogClose>
             <SubmitButton>Create</SubmitButton>
-            {/* <Button variant="default">Create</Button> */}
           </DialogFooter>
           {formState?.error && (
             <p className="pt-4 text-sm text-red-500">{formState.error}</p>
@@ -150,12 +149,13 @@ const createTaskViaCsv = async (
     Papa.parse<TaskCsv>(text, {
       header: true,
       skipEmptyLines: true,
-      complete: async (result) => {
+      complete: (result) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const rows = result.data as Array<TaskCsv>;
+        const rows = result.data as unknown as Array<TaskCsv>;
         const categories = getUniqueCategories(rows);
-        await createCategories(categories, eventId);
-        await insertTasks(rows, eventId);
+        void createCategories(categories, eventId).then(() => {
+          void insertTasks(rows, eventId);
+        });
       },
     });
   };
