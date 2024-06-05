@@ -230,6 +230,29 @@ export async function createOtpCode(eventId: number, oneTimeUse: boolean) {
   }
 }
 
+export async function changeLeaderboardVisibility(
+  newVisibility: boolean,
+  eventId: number,
+) {
+  const user = auth();
+  if (!user.userId) {
+    redirect("/login");
+  }
+
+  const admin = await isAdmin(eventId, user.userId);
+  if (typeof admin === "object") {
+    return admin;
+  }
+
+  await db
+    .update(events)
+    .set({
+      revealWinner: newVisibility,
+    })
+    .where(eq(events.id, eventId));
+  revalidatePath(`/event/${eventId}`);
+}
+
 export async function getCategory(
   eventId: number,
 ): Promise<{ id: number; name: string }[]> {

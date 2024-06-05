@@ -6,6 +6,8 @@ import { getLeaderboard } from "~/server/queries";
 
 type Props = {
   eventId: number;
+  finishesAt: Date;
+  revealWinner: boolean;
 };
 type LeaderboardData = Awaited<ReturnType<typeof getLeaderboard>>;
 type LeaderboardRow = {
@@ -13,7 +15,11 @@ type LeaderboardRow = {
   points: number;
 };
 
-export default function Leaderboard({ eventId }: Props) {
+export default function Leaderboard({
+  eventId,
+  finishesAt,
+  revealWinner,
+}: Props) {
   const [leaderboardData, setLeaderboardData] =
     useState<LeaderboardData | null>(null);
 
@@ -25,6 +31,15 @@ export default function Leaderboard({ eventId }: Props) {
   useEffect(() => {
     void updateLeaderboard();
   }, [eventId]);
+
+  const hideAfter = new Date(finishesAt.getTime() - 60 * 60 * 1000);
+  if (new Date() > hideAfter && !revealWinner) {
+    return (
+      <div>
+        <p>Leaderboard is hidden at this time</p>
+      </div>
+    );
+  }
 
   return (
     <div>

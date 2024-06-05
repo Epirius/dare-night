@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import {
+  changeLeaderboardVisibility,
   createTeam,
   deleteEvent,
   getCategory,
@@ -38,6 +39,7 @@ import HomeTab from "./_components/homeTab";
 import Leaderboard from "./_components/leaderboardTab";
 import CountdownTimer from "~/components/countdownTimer";
 import { CreateCategory } from "./_components/createCategory";
+import ChangeLeaderboardVisabilityButton from "./_components/changeLeaderboardVisability";
 
 export default async function EventPage({
   params,
@@ -63,6 +65,10 @@ export default async function EventPage({
           <div>
             {is_admin && (
               <div className="flex flex-wrap gap-4">
+                <ChangeLeaderboardVisabilityButton
+                  eventId={id}
+                  revealWinner={event.revealWinner}
+                />
                 <CreateCategory eventId={id} />
                 <CreateTask eventId={id} categories={eventCategories} />
                 <InviteOthers eventId={id} />
@@ -89,7 +95,11 @@ export default async function EventPage({
             <TeamPage eventId={id} userTeamId={userTeamId ?? undefined} />
           </TabsContent>
           <TabsContent value="leaderboard">
-            <Leaderboard eventId={id} />
+            <Leaderboard
+              eventId={id}
+              finishesAt={event.finishedAt}
+              revealWinner={event.revealWinner}
+            />
           </TabsContent>
         </Tabs>
       </div>
