@@ -1,5 +1,6 @@
 "use client";
 import { SquarePlus } from "lucide-react";
+import { type ChangeEvent } from "react";
 import { useFormState } from "react-dom";
 import { SubmitButton } from "~/app/_components/submitButton";
 import { Button } from "~/components/ui/button";
@@ -23,7 +24,8 @@ import {
   SelectTrigger,
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
-import { createTask, type getCategory } from "~/server/queries";
+import { createCategory, createTask, getCategory } from "~/server/queries";
+import Papa, { ParseResult } from "papaparse";
 
 type createTaskParams = {
   eventId: number;
@@ -110,7 +112,84 @@ export function CreateTask({ eventId, categories }: createTaskParams) {
             <p className="pt-4 text-sm text-red-500">{formState.error}</p>
           )}
         </form>
+        <h2>Batch create via csv</h2>
+        <input
+          type="file"
+          accept=".csv"
+          name="file"
+          onChange={(e) => createTaskViaCsv(e, eventId)}
+        />
       </DialogContent>
     </Dialog>
   );
 }
+
+interface TaskCsv {
+  title: string;
+  description: string;
+  points: number;
+  category: string;
+}
+
+const createTaskViaCsv = async (
+  e: ChangeEvent<HTMLInputElement>,
+  eventId: number,
+) => {
+  const fileList = e.target.files;
+  if (!fileList) return;
+  const file = fileList[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target?.result?.toString();
+    if (!text) return;
+    console.log(text);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    Papa.parse<TaskCsv>(text, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (result) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const rows = result.data as Array<TaskCsv>;
+        const categories = getUniqueCategories(rows);
+        await createCategories(categories, eventId);
+        await insertTasks(rows, eventId);
+      },
+    });
+  };
+  console.log(file);
+  reader.readAsText(file);
+};
+
+const getUniqueCategories = (rows: Array<TaskCsv>) => {
+  const categories = new Set<string>();
+  rows.forEach((row) => {
+    categories.add(row.category);
+  });
+  return Array.from(categories);
+};
+
+const createCategories = async (categories: Array<string>, eventId: number) => {
+  for (const category of categories) {
+    const data: FormData = new FormData();
+    data.append("name", category);
+    data.append("eventId", eventId.toString());
+    await createCategory({ error: "" }, data);
+    console.log(`Created category: ${category}`);
+  }
+};
+
+const insertTasks = async (rows: Array<TaskCsv>, eventId: number) => {
+  for (const row of rows) {
+    const data: FormData = new FormData();
+    data.append("name", row.title);
+    data.append("description", row.description);
+    data.append("points", row.points.toString());
+    data.append("eventId", eventId.toString());
+    data.append("category", row.category);
+    await createTask({ error: "" }, data);
+    console.log(`Created task: ${row.title}`);
+  }
+};
