@@ -34,6 +34,7 @@ export type TaskCardProps = {
     completed: boolean;
     completedAt: Date | null;
   };
+  points: number;
 };
 
 type Props = {
@@ -71,7 +72,8 @@ export function TaskCard({ data, teamId }: Props) {
               <h2 className="text-wrap text-2xl font-bold text-gray-900 dark:text-gray-200">
                 {data.name}
               </h2>
-              <div>
+              <div className="flex items-center gap-2">
+                <p>Points: {data.points}</p>
                 <form action={toggleCompleteTask}>
                   <input
                     value={data.eventId}
